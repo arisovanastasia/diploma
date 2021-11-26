@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/nav_graph"
+    app:startDestination="@id/authorizationFragment">
+
+    <fragment
+        android:id="@+id/authorizationFragment"
+        android:name="com.example.retrorally.AuthorizationFragment"
+        android:label="@string/first_page"
+        tools:layout="@layout/fragment_authorization" >
+        <action
+            android:id="@+id/action_authorizationFragment_to_judgeFragment"
+            app:destination="@id/judgeFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/judgeFragment"
+        android:name="com.example.retrorally.JudgeFragment"
+        android:label="@string/second_page"
+        tools:layout="@layout/fragment_judge" >
+        <action
+            android:id="@+id/action_judgeFragment_to_finalFragment"
+            app:destination="@id/finalFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/finalFragment"
+        android:name="com.example.retrorally.FinalFragment"
+        android:label="@string/app_name"
+        tools:layout="@layout/fragment_final" >
+        <action
+            android:id="@+id/action_finalFragment_to_authorizationFragment"
+            app:destination="@id/authorizationFragment" />
+    </fragment>
+</navigation>

@@ -1,0 +1,11 @@
+<resources>
+    <string name="app_name">Retro Rally</string>
+
+    <string name="login_hint">Введите ваш логин</string>
+    <string name="password_hint">Введите ваш пароль</string>
+    <string name="enter">Войти</string>
+    <string name="first_page">Вход</string>
+    <string name="second_page">Главная страница</string>
+
+
+</resources>
