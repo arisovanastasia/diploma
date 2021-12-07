@@ -6,6 +6,20 @@
     <string name="enter">Войти</string>
     <string name="first_page">Вход</string>
     <string name="second_page">Главная страница</string>
+    <string name="number_of_sector">Участок: </string>
 
+    <!-- значения кнопок -->
+    <string name="one_button">1</string>
+    <string name="two_button">2</string>
+    <string name="three_button">3</string>
+    <string name="four_button">4</string>
+    <string name="five_button">5</string>
+    <string name="six_button">6</string>
+    <string name="seven_button">7</string>
+    <string name="eight_button">8</string>
+    <string name="nine_button">9</string>
+    <string name="null_button">0</string>
+    <string name="send_button">ок</string>
+    <string name="cancel">назад</string>
 
 </resources>

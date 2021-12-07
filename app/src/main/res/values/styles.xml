@@ -1,8 +1,21 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <style name="grayButton" parent="@style/Widget.AppCompat.Button.Colored">
-        <item name="colorAccent">@color/green_900</item>
+
+    <style name="greenButton" parent="@style/Widget.AppCompat.Button.Colored">
+        <item name="android:background">@color/green_900</item>
         <item name="colorControlHighlight">#62727b</item>
     </style>
 
+    <style name="buttonStyle" parent="@style/Widget.AppCompat.Button.Colored">
+        <item name="android:textSize">25sp</item>
+        <item name="android:gravity">center</item>
+        <item name="android:layout_margin">3dp</item>
+        <item name="android:layout_marginTop">8dp</item>
+        <item name="android:textColor">@color/blue_gray_800</item>
+        <item name="android:minHeight">48dp</item>
+        <item name="android:minWidth">48dp</item>
+        <item name="android:background">@drawable/circle_button</item>
+
+
+    </style>
 </resources>

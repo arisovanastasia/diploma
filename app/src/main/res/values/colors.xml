@@ -12,5 +12,7 @@
     <color name="blue_gray_400">#78909c</color>
     <color name="blue_gray_100">#cfd8dc</color>
     <color name="blue_gray_300">#90a4ae</color>
+    <color name="blue_gray_800">#424242</color>
+
     <color name="background">#f3e5f5</color>
 </resources>

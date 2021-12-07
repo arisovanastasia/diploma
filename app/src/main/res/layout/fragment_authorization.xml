@@ -40,12 +40,11 @@
 
     <Button
         android:id="@+id/next_button"
-        style="@style/grayButton"
+        style="@style/greenButton"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="center_horizontal"
         android:layout_marginBottom="150dp"
-        android:text="@string/enter"
-        android:theme="@style/grayButton" />
+        android:text="@string/enter" />
 
 </LinearLayout>
