@@ -8,6 +8,11 @@
     <string name="second_page">Главная страница</string>
     <string name="number_of_sector">Участок: </string>
 
+    <!-- описание времени -->
+    <string name="start">начало работы</string>
+    <string name="current">текущее время</string>
+    <string name="end">конец работы</string>
+
     <!-- значения кнопок -->
     <string name="one_button">1</string>
     <string name="two_button">2</string>
@@ -22,4 +27,7 @@
     <string name="send_button">ок</string>
     <string name="cancel">назад</string>
 
+    <!-- номер участника -->
+    <string name="car_num">номер участника</string>
+    <string name="enter_car_num">Введите номер участника:</string>
 </resources>
