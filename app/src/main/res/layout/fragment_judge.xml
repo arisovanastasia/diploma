@@ -47,14 +47,13 @@
                 android:layout_height="wrap_content"
                 android:layout_marginHorizontal="2dp"
                 android:layout_marginTop="25dp"
-                android:layout_marginBottom="290dp"
                 android:background="@drawable/text_view_style"
                 android:format24Hour="HH:mm:ss"
                 android:gravity="center"
                 android:textColor="@color/black"
                 android:textSize="20sp"
                 android:textStyle="bold"
-                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintBottom_toTopOf="@+id/sector"
                 app:layout_constraintEnd_toStartOf="@+id/endTime"
                 app:layout_constraintHorizontal_bias="0.5"
                 app:layout_constraintStart_toEndOf="@+id/startTime"
@@ -82,13 +81,12 @@
                 android:id="@+id/sector"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="4dp"
-                android:layout_marginBottom="260dp"
+                android:layout_marginBottom="10dp"
                 android:fontFamily="casual"
                 android:text="@string/number_of_sector"
                 android:textColor="@color/blue_gray_800"
                 android:textSize="20sp"
-                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintBottom_toTopOf="@id/flow1"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@id/currentTime" />
@@ -101,7 +99,7 @@
                 android:text="@string/enter_car_num"
                 android:textColor="@color/blue_gray_400"
                 android:textSize="12sp"
-                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintBottom_toTopOf="@id/flow1"
                 app:layout_constraintEnd_toEndOf="@id/keyboard"
                 app:layout_constraintStart_toStartOf="@id/keyboard"
                 app:layout_constraintTop_toBottomOf="@+id/sector" />
@@ -140,6 +138,27 @@
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent" />
 
+            <include
+                android:id="@+id/main_view"
+                layout="@layout/input_data_layout"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/flow1" />
+
+            <Button
+                android:id="@+id/submit_button"
+                style="@style/greenButton"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_margin="20dp"
+                android:text="@string/send_final_button"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/main_view" />
 
         </androidx.constraintlayout.widget.ConstraintLayout>
     </ScrollView>

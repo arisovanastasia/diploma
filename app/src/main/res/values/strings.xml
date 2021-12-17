@@ -30,4 +30,13 @@
     <!-- номер участника -->
     <string name="car_num">номер участника</string>
     <string name="enter_car_num">Введите номер участника:</string>
+
+    <!-- для главного экрана -->
+    <string name="comment">комментарий</string>
+    <string name="add_item">+</string>
+
+    <!-- разное -->
+    <string name="send_final_button">оправить</string>
+    <string name="back_button">вернуться на первую страницу</string>
+    <string name="congratulations">Результаты успешно отправлены в штаб!</string>
 </resources>

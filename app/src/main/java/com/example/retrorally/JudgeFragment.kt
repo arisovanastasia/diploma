@@ -6,13 +6,16 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
 import androidx.fragment.app.Fragment
+import androidx.navigation.fragment.findNavController
+import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import com.example.retrorally.databinding.FragmentJudgeBinding
 
 
 class JudgeFragment : Fragment() {
 
     private var mainBinding: FragmentJudgeBinding? = null
-    private val one = ""
+    private lateinit var adapter: DataAdapter
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -24,7 +27,16 @@ class JudgeFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+
+        val recycler: RecyclerView = view.findViewById(R.id.input_data)
+        adapter = DataAdapter()
+        recycler.layoutManager = LinearLayoutManager(requireContext())
+        recycler.adapter = adapter
+
         setupCarNumberInput()
+        mainBinding?.submitButton?.setOnClickListener {
+            findNavController().navigate(R.id.action_judgeFragment_to_finalFragment)
+        }
     }
 
     private fun setupCarNumberInput() {
@@ -46,6 +58,10 @@ class JudgeFragment : Fragment() {
                             .substring(startIndex = 0, endIndex = text.toString().length - 1)
                     }
                 }
+            }
+            sending.setOnClickListener {
+                mainBinding?.mainView?.car?.text = mainBinding?.enterCar?.number?.text
+                mainBinding?.enterCar?.number?.text = ""
             }
         }
     }
