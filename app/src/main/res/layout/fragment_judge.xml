@@ -97,14 +97,13 @@
                 android:id="@+id/enter_number_of_car"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginEnd="240dp"
                 android:layout_marginBottom="240dp"
                 android:text="@string/enter_car_num"
                 android:textColor="@color/blue_gray_400"
                 android:textSize="12sp"
                 app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toEndOf="@id/keyboard"
+                app:layout_constraintStart_toStartOf="@id/keyboard"
                 app:layout_constraintTop_toBottomOf="@+id/sector" />
 
             <include
@@ -112,12 +111,9 @@
                 layout="@layout/common_button"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="5dp"
-                android:layout_marginEnd="240dp"
-                android:layout_marginBottom="20dp"
                 app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="@id/startTime"
+                app:layout_constraintEnd_toStartOf="@+id/enter_car"
+                app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@id/enter_number_of_car" />
 
             <include
@@ -125,12 +121,25 @@
                 layout="@layout/number_of_car"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="160dp"
-                android:layout_marginTop="30dp"
                 app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toEndOf="@+id/keyboard"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <androidx.constraintlayout.helper.widget.Flow
+                android:id="@+id/flow1"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="115dp"
+                app:constraint_referenced_ids="keyboard, enter_car"
+                app:flow_horizontalAlign="center"
+                app:flow_horizontalGap="40dp"
+                app:flow_horizontalStyle="packed"
+                app:flow_wrapMode="chain"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent" />
+
 
         </androidx.constraintlayout.widget.ConstraintLayout>
     </ScrollView>
