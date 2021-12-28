@@ -30,7 +30,7 @@
         android:textColor="@color/blue_gray_800"
         android:layout_marginBottom="10dp"
         android:gravity="center"
-        android:maxLength="8"
+        android:maxLength="6"
         android:textSize="17sp"
         tools:text="234" />
 </LinearLayout>

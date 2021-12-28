@@ -15,4 +15,5 @@
     <color name="blue_gray_800">#424242</color>
 
     <color name="background">#f3e5f5</color>
+    <color name="comment_button">#D4E1E3</color>
 </resources>

@@ -3,8 +3,9 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:background="@color/background">
+    android:layout_height="wrap_content"
+    android:background="@color/background"
+    android:focusableInTouchMode="true">
 
     <ScrollView
         android:layout_width="match_parent"
@@ -16,10 +17,13 @@
             tools:context=".JudgeFragment">
 
             <include
+                android:id="@+id/time_header"
                 layout="@layout/time_description"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="10dp"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintBottom_toTopOf="@+id/currentTime"
                 app:layout_constraintTop_toTopOf="parent" />
 
             <TextView
@@ -27,7 +31,6 @@
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_marginHorizontal="2dp"
-                android:layout_marginTop="25dp"
                 android:background="@drawable/text_view_style"
                 android:gravity="center"
                 android:textColor="@color/black"
@@ -38,7 +41,7 @@
                 app:layout_constraintHorizontal_bias="0.5"
                 app:layout_constraintHorizontal_chainStyle="spread"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent" />
+                app:layout_constraintTop_toBottomOf="@+id/time_header" />
 
 
             <TextClock
@@ -46,7 +49,6 @@
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_marginHorizontal="2dp"
-                android:layout_marginTop="25dp"
                 android:background="@drawable/text_view_style"
                 android:format24Hour="HH:mm:ss"
                 android:gravity="center"
@@ -57,7 +59,7 @@
                 app:layout_constraintEnd_toStartOf="@+id/endTime"
                 app:layout_constraintHorizontal_bias="0.5"
                 app:layout_constraintStart_toEndOf="@+id/startTime"
-                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/time_header"
                 tools:text="22:46:32" />
 
             <TextView
@@ -65,7 +67,6 @@
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_marginHorizontal="2dp"
-                android:layout_marginTop="25dp"
                 android:background="@drawable/text_view_style"
                 android:gravity="center"
                 android:textColor="@color/black"
@@ -75,13 +76,12 @@
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintHorizontal_bias="0.5"
                 app:layout_constraintStart_toEndOf="@+id/currentTime"
-                app:layout_constraintTop_toTopOf="parent" />
+                app:layout_constraintTop_toBottomOf="@+id/time_header" />
 
             <TextView
                 android:id="@+id/sector"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginBottom="10dp"
                 android:fontFamily="casual"
                 android:text="@string/number_of_sector"
                 android:textColor="@color/blue_gray_800"
@@ -95,14 +95,14 @@
                 android:id="@+id/enter_number_of_car"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginBottom="240dp"
+                android:layout_marginTop="10dp"
                 android:text="@string/enter_car_num"
                 android:textColor="@color/blue_gray_400"
                 android:textSize="12sp"
-                app:layout_constraintBottom_toTopOf="@id/flow1"
+                app:layout_constraintBottom_toTopOf="@id/keyboard"
                 app:layout_constraintEnd_toEndOf="@id/keyboard"
                 app:layout_constraintStart_toStartOf="@id/keyboard"
-                app:layout_constraintTop_toBottomOf="@+id/sector" />
+                app:layout_constraintTop_toBottomOf="@id/sector" />
 
             <include
                 android:id="@+id/keyboard"
@@ -128,22 +128,25 @@
                 android:id="@+id/flow1"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="115dp"
                 app:constraint_referenced_ids="keyboard, enter_car"
                 app:flow_horizontalAlign="center"
                 app:flow_horizontalGap="40dp"
                 app:flow_horizontalStyle="packed"
                 app:flow_wrapMode="chain"
+                app:layout_constraintBottom_toTopOf="@+id/main_view"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent" />
+                app:layout_constraintTop_toBottomOf="@+id/enter_number_of_car" />
 
             <include
                 android:id="@+id/main_view"
                 layout="@layout/input_data_layout"
-                android:layout_width="wrap_content"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                app:layout_constraintBottom_toBottomOf="parent"
+                android:layout_marginHorizontal="10dp"
+                android:layout_marginTop="30dp"
+                android:layout_marginBottom="30dp"
+                app:layout_constraintBottom_toTopOf="@+id/submit_button"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/flow1" />
@@ -153,8 +156,8 @@
                 style="@style/greenButton"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_margin="20dp"
                 android:text="@string/send_final_button"
+                android:layout_marginBottom="20dp"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"

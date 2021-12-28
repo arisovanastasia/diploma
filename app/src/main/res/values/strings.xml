@@ -39,4 +39,6 @@
     <string name="send_final_button">оправить</string>
     <string name="back_button">вернуться на первую страницу</string>
     <string name="congratulations">Результаты успешно отправлены в штаб!</string>
+    <string name="error">Вы не добавили номер участника!</string>
+    <string name="enter_message">Введите текст</string>
 </resources>

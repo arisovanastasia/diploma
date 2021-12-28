@@ -5,78 +5,86 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:background="@drawable/main_view_background"
+    android:focusableInTouchMode="true"
     android:padding="10dp"
     tools:context=".MainActivity">
 
-    <TextView
-        android:id="@+id/car"
-        android:layout_width="wrap_content"
+    <LinearLayout
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="@drawable/text_view_style"
-        android:gravity="center"
-        android:padding="10dp"
-        android:textColor="@color/blue_gray_800"
-        android:textSize="17sp"
-        android:textStyle="bold"
-        app:layout_constraintBottom_toTopOf="@+id/input_data"
-        app:layout_constraintEnd_toStartOf="@+id/result_text"
-        app:layout_constraintHorizontal_chainStyle="spread"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        tools:text="345" />
-
-    <EditText
-        android:id="@+id/result_text"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:background="@drawable/text_view_style"
-        android:padding="10dp"
-        android:textColor="@color/black"
-        android:textSize="17sp"
-        app:layout_constraintBottom_toTopOf="@+id/input_data"
-        app:layout_constraintEnd_toStartOf="@+id/comments_text"
-        app:layout_constraintStart_toEndOf="@+id/car"
-        app:layout_constraintTop_toTopOf="parent"
-        tools:text="5:49:26" />
-
-    <EditText
-        android:id="@+id/comments_text"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="6dp"
-        android:background="@color/blue_gray_100"
-        android:hint="@string/comment"
-        android:textColorHint="@color/blue_gray_400"
-        android:textSize="17sp"
-        app:layout_constraintBottom_toTopOf="@+id/input_data"
-        app:layout_constraintEnd_toStartOf="@+id/add_new_item_button"
-        app:layout_constraintStart_toEndOf="@+id/result_text"
-        app:layout_constraintTop_toTopOf="parent"
-        tools:ignore="TextContrastCheck" />
-
-    <Button
-        android:id="@+id/add_new_item_button"
-        style="@style/addButtonStyle"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="40dp"
-        android:text="@string/add_item"
-        android:textSize="25sp"
-        app:layout_constraintBottom_toTopOf="@+id/input_data"
+        app:layout_constraintBottom_toTopOf="@+id/results_recycler"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toEndOf="@+id/comments_text"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <TextView
+            android:id="@+id/car"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:layout_marginHorizontal="3dp"
+            android:layout_weight="1"
+            android:background="@drawable/text_view_style"
+            android:gravity="center"
+            android:paddingHorizontal="5dp"
+            android:paddingVertical="3dp"
+            android:textColor="@color/blue_gray_800"
+            android:textSize="17sp"
+            android:textStyle="bold"
+            tools:text="345" />
+
+        <EditText
+            android:id="@+id/result_text"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:layout_marginEnd="10dp"
+            android:layout_weight="8"
+            android:background="@drawable/text_view_style"
+            android:gravity="center"
+            android:imeOptions="actionDone"
+            android:inputType="time"
+            android:lines="2"
+            android:padding="8dp"
+            android:textColor="@color/black"
+            android:textSize="17sp"
+            tools:text="5:49:26" />
+
+        <ImageButton
+            android:id="@+id/comment_button"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:layout_marginHorizontal="6dp"
+            android:layout_weight="1"
+            android:background="@color/comment_button"
+            android:padding="5dp"
+            android:src="@drawable/ic_baseline_comment_24" />
+
+        <Button
+            android:id="@+id/add_new_item_button"
+            style="@style/addButtonStyle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:layout_margin="3dp"
+            android:layout_marginStart="40dp"
+            android:layout_weight="1"
+            android:text="@string/add_item"
+            android:textSize="25sp" />
+    </LinearLayout>
 
     <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/input_data"
+        android:id="@+id/results_recycler"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="30dp"
         android:scrollbars="vertical"
-        app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHeight_max="350dp"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toTopOf="parent"
+        tools:listitem="@layout/list_item_data" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

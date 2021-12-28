@@ -1,15 +1,19 @@
 package com.example.retrorally
 
+import android.app.AlertDialog
+import android.content.Context
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.ImageButton
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.example.retrorally.data.models.Participant
+import com.example.retrorally.databinding.DialogLayoutBinding
 
-class DataAdapter : RecyclerView.Adapter<DataAdapter.ItemViewHolder>() {
 
-    private var list = mutableListOf<Participant>()
+class DataAdapter(val c: Context, private val resultList: ArrayList<Participant>) :
+    RecyclerView.Adapter<DataAdapter.ItemViewHolder>() {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ItemViewHolder {
         val view: View = LayoutInflater.from(parent.context)
@@ -18,24 +22,41 @@ class DataAdapter : RecyclerView.Adapter<DataAdapter.ItemViewHolder>() {
     }
 
     override fun onBindViewHolder(holder: ItemViewHolder, position: Int) {
-        holder.onBind(list[position])
+        holder.onBind(resultList[position])
+
     }
 
-    override fun getItemCount(): Int = list?.size
+    override fun getItemCount(): Int = resultList.size
 
 
-    class ItemViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
+    inner class ItemViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
 
         var number: TextView = itemView.findViewById(R.id.number_of_car)
         var score: TextView = itemView.findViewById(R.id.result)
-        var comment: TextView = itemView.findViewById(R.id.comments)
+        var inputMessage: ImageButton = itemView.findViewById(R.id.comment)
 
-        fun onBind(participant: Participant) {
-            number.text = participant.number.toString()
-            score.text = participant.score
-            comment.text = participant.comment
+        fun onBind(result: Participant) {
+
+            number.text = result.number
+            score.text = result.score
+            inputMessage.setOnClickListener {
+                val messageView =
+                    DialogLayoutBinding.inflate(LayoutInflater.from(itemView.context)).inputMessage
+                messageView.setText(result.comment)
+                AlertDialog.Builder(itemView.context)
+                    .setTitle("Комментарий")
+                    .setView(messageView)
+                    .setPositiveButton("OK") { dialog, id ->
+
+                        dialog.dismiss()
+                    }
+                    .setNegativeButton("Отмена") { dialog, id ->
+                        dialog.cancel()
+                    }
+                    .create()
+                    .show()
+            }
         }
-
     }
 }
 
