@@ -2,6 +2,7 @@ package com.example.retrorally
 
 import android.app.AlertDialog
 import android.os.Bundle
+import android.view.Gravity
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -11,6 +12,7 @@ import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.example.retrorally.adapters.DataAdapter
 import com.example.retrorally.data.models.Participant
 import com.example.retrorally.databinding.DialogLayoutBinding
 import com.example.retrorally.databinding.FragmentJudgeBinding
@@ -103,6 +105,7 @@ class JudgeFragment : Fragment() {
             myComment = ""
         } else {
             val toast = Toast.makeText(context, R.string.error, Toast.LENGTH_LONG)
+            toast.setGravity(Gravity.START, 0, 0)
             toast.show()
         }
     }

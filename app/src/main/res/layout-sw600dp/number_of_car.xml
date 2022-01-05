@@ -3,22 +3,23 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"
-    android:background="@drawable/frame_for_text"
+    android:background="@drawable/big_frame_for_text"
     android:orientation="vertical">
 
     <TextView
         android:id="@+id/car_number"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginHorizontal="8dp"
-        android:layout_marginVertical="4dp"
+        android:layout_marginHorizontal="12dp"
+        android:layout_marginVertical="10dp"
         android:gravity="center_horizontal"
         android:text="@string/car_num"
-        android:textColor="@color/blue_gray_800" />
+        android:textColor="@color/blue_gray_800"
+        android:textSize="17sp" />
 
     <View
         android:layout_width="match_parent"
-        android:layout_height="3dp"
+        android:layout_height="5dp"
         android:background="@color/blue_gray_400" />
 
     <TextView
@@ -26,11 +27,12 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginHorizontal="8dp"
-        android:layout_marginTop="6dp"
-        android:textColor="@color/blue_gray_800"
-        android:layout_marginBottom="10dp"
+        android:layout_marginTop="8dp"
+        android:layout_marginBottom="15dp"
         android:gravity="center"
         android:maxLength="6"
-        android:textSize="17sp"
+        android:textColor="@color/blue_gray_800"
+        android:textSize="20sp"
+        android:textStyle="bold"
         tools:text="234" />
 </LinearLayout>

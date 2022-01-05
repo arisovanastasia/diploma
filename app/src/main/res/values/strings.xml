@@ -6,7 +6,7 @@
     <string name="enter">Войти</string>
     <string name="first_page">Вход</string>
     <string name="second_page">Главная страница</string>
-    <string name="number_of_sector">Участок: </string>
+    <string name="number_of_sector">Ваш участок: </string>
 
     <!-- описание времени -->
     <string name="start">начало работы</string>

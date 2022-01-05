@@ -17,6 +17,17 @@
         <item name="android:background">@drawable/circle_button</item>
     </style>
 
+    <style name="big_button_style" parent="@style/Widget.AppCompat.Button.Colored">
+        <item name="android:textSize">35sp</item>
+        <item name="android:gravity">center</item>
+        <item name="android:layout_margin">5dp</item>
+        <item name="android:layout_marginTop">8dp</item>
+        <item name="android:textColor">@color/blue_gray_800</item>
+        <item name="android:minHeight">58dp</item>
+        <item name="android:minWidth">58dp</item>
+        <item name="android:background">@drawable/circle_button</item>
+    </style>
+
     <style name="addButtonStyle" parent="@style/Widget.AppCompat.Button.Colored">
         <item name="android:textSize">25sp</item>
         <item name="android:gravity">center</item>

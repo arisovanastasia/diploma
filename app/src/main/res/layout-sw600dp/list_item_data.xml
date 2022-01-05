@@ -11,12 +11,12 @@
         android:layout_height="wrap_content"
         android:layout_gravity="center"
         android:layout_margin="8dp"
-        android:layout_weight="1"
-        android:background="@drawable/frame_for_text"
+        android:layout_weight="0.5"
+        android:background="@drawable/big_frame_for_text"
         android:gravity="center"
-        android:padding="10dp"
+        android:paddingVertical="10dp"
         android:textColor="@color/blue_gray_800"
-        android:textSize="17sp"
+        android:textSize="20sp"
         android:textStyle="bold"
         tools:text="345" />
 
@@ -25,13 +25,13 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="center"
-        android:layout_margin="8dp"
-        android:layout_weight="5"
-        android:background="@drawable/frame_for_text"
+        android:layout_margin="10dp"
+        android:layout_weight="4"
+        android:background="@drawable/big_frame_for_text"
         android:gravity="center"
-        android:padding="10dp"
+        android:paddingVertical="10dp"
         android:textColor="@color/black"
-        android:textSize="17sp"
+        android:textSize="20sp"
         tools:text="5:49:26" />
 
     <ImageButton
@@ -40,9 +40,9 @@
         android:layout_height="wrap_content"
         android:layout_gravity="center"
         android:layout_margin="8dp"
-        android:layout_weight="1"
+        android:layout_weight="0.5"
         android:background="@color/comment_button"
-        android:padding="5dp"
+        android:paddingVertical="10dp"
         android:src="@drawable/ic_baseline_comment_24" />
 
 </LinearLayout>

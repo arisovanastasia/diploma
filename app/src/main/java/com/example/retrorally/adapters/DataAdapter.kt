@@ -1,4 +1,4 @@
-package com.example.retrorally
+package com.example.retrorally.adapters
 
 import android.app.AlertDialog
 import android.content.Context
@@ -8,6 +8,7 @@ import android.view.ViewGroup
 import android.widget.ImageButton
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
+import com.example.retrorally.R
 import com.example.retrorally.data.models.Participant
 import com.example.retrorally.databinding.DialogLayoutBinding
 
@@ -29,7 +30,7 @@ class DataAdapter(val c: Context, private val resultList: ArrayList<Participant>
     override fun getItemCount(): Int = resultList.size
 
 
-    inner class ItemViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
+    class ItemViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
 
         var number: TextView = itemView.findViewById(R.id.number_of_car)
         var score: TextView = itemView.findViewById(R.id.result)
