@@ -7,7 +7,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
-import android.widget.Toast
+import android.widget.FrameLayout
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -16,6 +16,7 @@ import com.example.retrorally.adapters.DataAdapter
 import com.example.retrorally.data.models.Participant
 import com.example.retrorally.databinding.DialogLayoutBinding
 import com.example.retrorally.databinding.FragmentJudgeBinding
+import com.google.android.material.snackbar.Snackbar
 
 
 class JudgeFragment : Fragment() {
@@ -47,7 +48,7 @@ class JudgeFragment : Fragment() {
         recycler.adapter = adapter
 
         setupCarNumberInput()
-        mainBinding?.mainView?.addNewItemButton?.setOnClickListener { addNewItem() }
+        mainBinding?.mainView?.addNewItemButton?.setOnClickListener { addNewItem(it) }
 
         mainBinding?.submitButton?.setOnClickListener {
             findNavController().navigate(R.id.action_judgeFragment_to_finalFragment)
@@ -92,7 +93,7 @@ class JudgeFragment : Fragment() {
         }
     }
 
-    private fun addNewItem() {
+    private fun addNewItem(view: View) {
         val num = mainBinding?.mainView?.car?.text.toString()
         val res = mainBinding?.mainView?.resultText?.text.toString()
         val com = myComment
@@ -104,9 +105,15 @@ class JudgeFragment : Fragment() {
             mainBinding?.mainView?.resultText?.text?.clear()
             myComment = ""
         } else {
-            val toast = Toast.makeText(context, R.string.error, Toast.LENGTH_LONG)
-            toast.setGravity(Gravity.START, 0, 0)
-            toast.show()
+            val snack = Snackbar.make(view, R.string.error, 2000)
+            snack.setBackgroundTint(resources.getColor(R.color.orange_light, null))
+            snack.setTextColor(resources.getColor(R.color.green_dark, null))
+            val snackView = snack.view
+            val params: FrameLayout.LayoutParams =
+                snackView.layoutParams as FrameLayout.LayoutParams
+            params.gravity = Gravity.CENTER_HORIZONTAL
+            snackView.layoutParams = params
+            snack.show()
         }
     }
 
