@@ -14,7 +14,7 @@
         <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            tools:context=".JudgeFragment">
+            tools:context=".ui.main.view.JudgeFragment">
 
             <include
                 android:id="@+id/time_header"
@@ -111,29 +111,27 @@
 
             <include
                 android:id="@+id/keyboard"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/enter_number_of_car"
+                android:layout_marginStart="20dp"
                 layout="@layout/keyboard_layout"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content" />
 
-            <include
-                android:id="@+id/enter_car"
-                layout="@layout/number_of_car"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content" />
-
-            <androidx.constraintlayout.helper.widget.Flow
-                android:id="@+id/flow1"
+            <TextView
+                android:id="@+id/description_view"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                app:constraint_referenced_ids="keyboard, enter_car"
-                app:flow_horizontalAlign="center"
-                app:flow_horizontalGap="120dp"
-                app:flow_horizontalStyle="packed"
-                app:flow_wrapMode="chain"
-                app:layout_constraintBottom_toTopOf="@+id/main_view"
+                android:layout_margin="50dp"
+                android:textSize="17sp"
+                android:background="@drawable/frame_for_text"
+                android:maxLines="10"
+                android:padding="5dp"
                 app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/enter_number_of_car" />
+                app:layout_constraintStart_toEndOf="@+id/keyboard"
+                app:layout_constraintTop_toBottomOf="@+id/sector"
+                tools:text="Вы находитесь на участке с датчиками. Проверьте, что все работает" />
+
 
             <include
                 android:id="@+id/main_view"
@@ -146,7 +144,7 @@
                 app:layout_constraintBottom_toTopOf="@+id/submit_button"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/flow1" />
+                app:layout_constraintTop_toBottomOf="@+id/keyboard" />
 
             <Button
                 android:id="@+id/submit_button"

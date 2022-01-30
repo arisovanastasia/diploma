@@ -1,4 +1,4 @@
-package com.example.retrorally.adapters
+package com.example.retrorally.ui.main.adapters
 
 import android.app.AlertDialog
 import android.content.Context
@@ -12,8 +12,7 @@ import com.example.retrorally.R
 import com.example.retrorally.data.models.Participant
 import com.example.retrorally.databinding.DialogLayoutBinding
 
-
-class DataAdapter(val c: Context, private val resultList: ArrayList<Participant>) :
+class DataAdapter(val c: Context, private var resultList: ArrayList<Participant>) :
     RecyclerView.Adapter<DataAdapter.ItemViewHolder>() {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ItemViewHolder {
@@ -24,11 +23,14 @@ class DataAdapter(val c: Context, private val resultList: ArrayList<Participant>
 
     override fun onBindViewHolder(holder: ItemViewHolder, position: Int) {
         holder.onBind(resultList[position])
-
     }
 
     override fun getItemCount(): Int = resultList.size
 
+    fun setData(participants : ArrayList<Participant>) {
+        resultList = participants
+        notifyDataSetChanged()
+    }
 
     class ItemViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
 

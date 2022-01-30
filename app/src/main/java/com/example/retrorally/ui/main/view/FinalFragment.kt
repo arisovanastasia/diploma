@@ -1,4 +1,4 @@
-package com.example.retrorally
+package com.example.retrorally.ui.main.view
 
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -6,6 +6,7 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
+import com.example.retrorally.R
 import com.example.retrorally.databinding.FragmentFinalBinding
 
 

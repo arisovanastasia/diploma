@@ -6,7 +6,7 @@
     android:layout_height="wrap_content"
     android:background="@drawable/main_view_background"
     android:focusableInTouchMode="true"
-    tools:context=".MainActivity">
+    tools:context=".ui.main.view.MainActivity">
 
     <TextView
         android:id="@+id/car"

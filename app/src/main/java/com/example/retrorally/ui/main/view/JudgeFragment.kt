@@ -1,4 +1,4 @@
-package com.example.retrorally
+package com.example.retrorally.ui.main.view
 
 import android.app.AlertDialog
 import android.os.Bundle
@@ -9,19 +9,24 @@ import android.view.ViewGroup
 import android.widget.Button
 import android.widget.FrameLayout
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.activityViewModels
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import com.example.retrorally.adapters.DataAdapter
+import com.example.retrorally.R
 import com.example.retrorally.data.models.Participant
+import com.example.retrorally.data.network.ContestDataDTO
 import com.example.retrorally.databinding.DialogLayoutBinding
 import com.example.retrorally.databinding.FragmentJudgeBinding
+import com.example.retrorally.ui.main.adapters.DataAdapter
+import com.example.retrorally.ui.main.viewmodel.SharedViewModel
 import com.google.android.material.snackbar.Snackbar
 
 
 class JudgeFragment : Fragment() {
 
     private var mainBinding: FragmentJudgeBinding? = null
+    private val viewModel: SharedViewModel by activityViewModels()
     private lateinit var adapter: DataAdapter
     private lateinit var resultList: ArrayList<Participant>
     private var myComment: String = ""
@@ -31,6 +36,7 @@ class JudgeFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View? {
         mainBinding = FragmentJudgeBinding.inflate(inflater, container, false)
+        observeData()
         return mainBinding?.root
     }
 
@@ -39,17 +45,40 @@ class JudgeFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
         resultList = ArrayList()
         val recycler: RecyclerView = view.findViewById(R.id.results_recycler)
-
         //set adapter
         adapter = DataAdapter(this.requireContext(), resultList)
-
         //set Recycler view adapter
         recycler.layoutManager = LinearLayoutManager(requireContext())
         recycler.adapter = adapter
 
         setupCarNumberInput()
-        mainBinding?.mainView?.addNewItemButton?.setOnClickListener { addNewItem(it) }
+        onClickListeners()
+    }
 
+    private fun observeData() {
+        viewModel.contestData.observe(this.viewLifecycleOwner) {
+            setContestDataToViews(it)
+        }
+        viewModel.carNumber.observe(this.viewLifecycleOwner) {
+
+        }
+        viewModel.result.observe(this.viewLifecycleOwner) {
+
+        }
+        viewModel.participantsLiveData.observe(this.viewLifecycleOwner) {
+            adapter.setData(it)
+        }
+    }
+
+    private fun setContestDataToViews(data: ContestDataDTO) {
+        mainBinding?.startTime?.text = data.timeToStart
+        mainBinding?.endTime?.text = data.timeToEnd
+        mainBinding?.sector?.text = data.nameOfArea
+        mainBinding?.descriptionView?.text = data.description
+    }
+
+    private fun onClickListeners() {
+        mainBinding?.mainView?.addNewItemButton?.setOnClickListener { addNewItem(it) }
         mainBinding?.submitButton?.setOnClickListener {
             findNavController().navigate(R.id.action_judgeFragment_to_finalFragment)
         }
@@ -71,7 +100,7 @@ class JudgeFragment : Fragment() {
             nine.setupNumberInputButton(9)
             nul.setupNumberInputButton(0)
             cancel.setOnClickListener {
-                mainBinding?.enterCar?.number?.apply {
+                mainBinding?.mainView?.car?.apply {
                     if (text.isNotEmpty()) {
                         text = text.toString()
                             .substring(startIndex = 0, endIndex = text.toString().length - 1)
@@ -79,15 +108,14 @@ class JudgeFragment : Fragment() {
                 }
             }
             sending.setOnClickListener {
-                mainBinding?.mainView?.car?.text = mainBinding?.enterCar?.number?.text
-                mainBinding?.enterCar?.number?.text = ""
+                viewModel.onSendButtonClick(mainBinding?.mainView?.car?.text.toString().toInt())
             }
         }
     }
 
     private fun Button.setupNumberInputButton(num: Int) {
         setOnClickListener {
-            mainBinding?.enterCar?.number?.apply {
+            mainBinding?.mainView?.car?.apply {
                 text = text.toString() + num
             }
         }
@@ -99,22 +127,24 @@ class JudgeFragment : Fragment() {
         val com = myComment
         if (num != "") {
             resultList.add(0, Participant(num, res, com))
-            adapter.notifyDataSetChanged()
-
             mainBinding?.mainView?.car?.text = ""
             mainBinding?.mainView?.resultText?.text?.clear()
             myComment = ""
         } else {
-            val snack = Snackbar.make(view, R.string.error, 2000)
-            snack.setBackgroundTint(resources.getColor(R.color.orange_light, null))
-            snack.setTextColor(resources.getColor(R.color.green_dark, null))
-            val snackView = snack.view
-            val params: FrameLayout.LayoutParams =
-                snackView.layoutParams as FrameLayout.LayoutParams
-            params.gravity = Gravity.CENTER_HORIZONTAL
-            snackView.layoutParams = params
-            snack.show()
+            createSnack(view)
         }
+    }
+
+    private fun createSnack(view: View) {
+        val snack = Snackbar.make(view, R.string.error, 2000)
+        snack.setBackgroundTint(resources.getColor(R.color.orange_light, null))
+        snack.setTextColor(resources.getColor(R.color.green_dark, null))
+        val snackView = snack.view
+        val params: FrameLayout.LayoutParams =
+            snackView.layoutParams as FrameLayout.LayoutParams
+        params.gravity = Gravity.CENTER_HORIZONTAL
+        snackView.layoutParams = params
+        snack.show()
     }
 
     private fun writeComment() {

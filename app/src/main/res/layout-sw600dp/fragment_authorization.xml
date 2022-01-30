@@ -1,35 +1,32 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:focusableInTouchMode="true"
     android:background="@color/background"
+    android:focusableInTouchMode="true"
     android:orientation="vertical"
-    tools:context=".AuthorizationFragment">
+    tools:context=".ui.main.view.AuthorizationFragment">
 
-    <EditText
-        android:id="@+id/login"
+    <TextView
+        android:id="@+id/greetings"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_gravity="center"
         android:layout_marginHorizontal="100dp"
-        android:layout_marginTop="300dp"
-        android:layout_marginBottom="16dp"
-        android:background="@drawable/edit_text_style"
-        android:hint="@string/login_hint"
-        android:importantForAutofill="no"
-        android:inputType="textEmailAddress"
-        android:padding="15dp"
-        android:textColorHint="@color/blue_gray_300" />
+        android:layout_marginTop="220dp"
+        android:layout_marginBottom="70dp"
+        android:gravity="center"
+        android:minLines="2"
+        android:text="@string/greetings_text"
+        android:textColor="@color/blue_gray_800"
+        android:textSize="23sp" />
 
     <EditText
         android:id="@+id/password"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_gravity="center"
-        android:paddingVertical="20dp"
         android:layout_marginHorizontal="100dp"
         android:layout_marginBottom="100dp"
         android:background="@drawable/edit_text_style"
@@ -37,17 +34,26 @@
         android:importantForAutofill="no"
         android:inputType="textPassword"
         android:padding="15dp"
+        android:paddingVertical="20dp"
         android:textColorHint="@color/blue_gray_300" />
+
+    <ProgressBar
+        android:id="@+id/progress_bar"
+        android:layout_marginBottom="80dp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:visibility="invisible" />
 
     <Button
         android:id="@+id/next_button"
         style="@style/greenButton"
-        android:padding="15dp"
-        android:textSize="17sp"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="center_horizontal"
-        android:layout_marginBottom="130dp"
-        android:text="@string/enter" />
+        android:layout_marginBottom="100dp"
+        android:padding="15dp"
+        android:text="@string/enter"
+        android:textSize="17sp" />
 
 </LinearLayout>

@@ -1,4 +1,4 @@
-package com.example.retrorally
+package com.example.retrorally.ui.main.view
 
 import android.app.Activity
 import android.graphics.Rect
@@ -11,6 +11,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.navigation.NavController
 import androidx.navigation.fragment.NavHostFragment
 import androidx.navigation.ui.setupActionBarWithNavController
+import com.example.retrorally.R
 
 class MainActivity : AppCompatActivity(R.layout.activity_main) {
 

@@ -1,10 +1,13 @@
 <resources>
     <string name="app_name">Retro Rally</string>
 
-    <string name="login_hint">Введите ваш логин</string>
+    <!--авторизация -->
     <string name="password_hint">Введите ваш пароль</string>
     <string name="enter">Войти</string>
     <string name="first_page">Вход</string>
+    <string name="greetings_text">Добро пожаловать! Для авторизации введите пароль</string>
+
+
     <string name="second_page">Главная страница</string>
     <string name="number_of_sector">Ваш участок: </string>
 
