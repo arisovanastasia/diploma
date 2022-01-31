@@ -8,5 +8,5 @@ data class ContestDataDTO(
     @Json(name = "judge_start_time") val timeToStart: String,
     @Json(name = "judge_end_time") val timeToEnd: String,
     @Json(name = "description") val description: String,
-    @Json(name = "protocol") val userProtocol: List<Participant>
+    @Json(name = "protocol") val userProtocol: ArrayList<Participant>
 )

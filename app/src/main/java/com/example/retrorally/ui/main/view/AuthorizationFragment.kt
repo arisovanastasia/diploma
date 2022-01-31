@@ -29,7 +29,7 @@ class AuthorizationFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        binding?.nextButton?.setOnClickListener { checkPassword() }
+        binding?.nextButton?.setOnClickListener { checkPassword(binding?.passwordEditText?.text.toString()) }
     }
 
     private fun startObserve() {
@@ -42,7 +42,7 @@ class AuthorizationFragment : Fragment() {
         }
         viewModel.error.observe(this.viewLifecycleOwner) {
             Toast.makeText(this.requireContext(), it, Toast.LENGTH_SHORT).show()
-            binding?.password?.setText("")
+            binding?.passwordEditText?.setText("")
         }
         viewModel.contestData.observe(this.viewLifecycleOwner) {
             //set data in new fragment
@@ -50,11 +50,11 @@ class AuthorizationFragment : Fragment() {
         }
     }
 
-    private fun checkPassword() {
-        if (binding?.password?.text.toString() == "") {
+    private fun checkPassword(password: String) {
+        if (binding?.passwordEditText?.text.toString() == "") {
             Toast.makeText(this.requireContext(), "Введите пароль!", Toast.LENGTH_SHORT).show()
         } else {
-            viewModel.onButtonClick()
+            viewModel.onButtonClick(password)
         }
     }
 

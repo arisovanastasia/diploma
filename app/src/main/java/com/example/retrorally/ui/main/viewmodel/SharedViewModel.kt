@@ -17,23 +17,17 @@ class SharedViewModel : ViewModel() {
     private val _contestData = MutableLiveData<ContestDataDTO>()
     val contestData: LiveData<ContestDataDTO> = _contestData
 
-    private val _carNumber = MutableLiveData<Int>()
-    val carNumber: LiveData<Int> = _carNumber
-    private val _result = MutableLiveData<String>()
-    val result: LiveData<String> = _result
-    private val _comment = MutableLiveData<String>()
-    val comment: LiveData<String> = _comment
-    private val _participantsLiveData = MutableLiveData<ArrayList<Participant>>()
-    val participantsLiveData: LiveData<ArrayList<Participant>> = _participantsLiveData
+    private val _participantsLiveData = MutableLiveData<MutableList<Participant>>()
+    val participantsLiveData: LiveData<MutableList<Participant>> = _participantsLiveData
 
     private var job: Job? = null
     private val exceptionHandler = CoroutineExceptionHandler { _, throwable ->
         _error.value = "Exception handled : ${throwable.localizedMessage}"
     }
 
-    private fun getContestData() {
+    private fun getContestData(password: String) {
         job = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
-            val response = RetroRallyApi.retrofitService.getJudgeWithData()
+            val response = RetroRallyApi.retrofitService.getJudgeWithData(password)
             withContext(Dispatchers.Main) {
                 if (response.isSuccessful) {
                     _contestData.value = response.body()
@@ -46,29 +40,18 @@ class SharedViewModel : ViewModel() {
         }
     }
 
-    fun onButtonClick() {
+    fun onButtonClick(password : String) {
         _loading.value = true
-        getContestData()
+        getContestData(password)
     }
 
-    fun onSendButtonClick(num: Int) {
-        _carNumber.value = num
-    }
 
-    fun onClickToAddItem() {
-        if (_carNumber.value != "".toInt()) {
-            addItemToRecycler()
-        }
-    }
-
-    private fun addItemToRecycler() {
-
-    }
-
-    fun clearItem() {
-        _carNumber.value = "".toInt()
-        _result.value = ""
-        _comment.value = ""
+    fun addItemToLiveData(num: String, score: String, comment: String) {
+        _participantsLiveData.value?.add(
+            0,
+            Participant(num,score,comment)
+        )
+        _participantsLiveData.value = _participantsLiveData.value
     }
 
     override fun onCleared() {

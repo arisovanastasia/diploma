@@ -29,7 +29,7 @@ class JudgeFragment : Fragment() {
     private val viewModel: SharedViewModel by activityViewModels()
     private lateinit var adapter: DataAdapter
     private lateinit var resultList: ArrayList<Participant>
-    private var myComment: String = ""
+    private var myComment = ""
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -59,12 +59,6 @@ class JudgeFragment : Fragment() {
         viewModel.contestData.observe(this.viewLifecycleOwner) {
             setContestDataToViews(it)
         }
-        viewModel.carNumber.observe(this.viewLifecycleOwner) {
-
-        }
-        viewModel.result.observe(this.viewLifecycleOwner) {
-
-        }
         viewModel.participantsLiveData.observe(this.viewLifecycleOwner) {
             adapter.setData(it)
         }
@@ -78,7 +72,9 @@ class JudgeFragment : Fragment() {
     }
 
     private fun onClickListeners() {
-        mainBinding?.mainView?.addNewItemButton?.setOnClickListener { addNewItem(it) }
+        mainBinding?.mainView?.addNewItemButton?.setOnClickListener {
+            setDataIntoViews(it)
+        }
         mainBinding?.submitButton?.setOnClickListener {
             findNavController().navigate(R.id.action_judgeFragment_to_finalFragment)
         }
@@ -107,9 +103,6 @@ class JudgeFragment : Fragment() {
                     }
                 }
             }
-            sending.setOnClickListener {
-                viewModel.onSendButtonClick(mainBinding?.mainView?.car?.text.toString().toInt())
-            }
         }
     }
 
@@ -121,15 +114,16 @@ class JudgeFragment : Fragment() {
         }
     }
 
-    private fun addNewItem(view: View) {
-        val num = mainBinding?.mainView?.car?.text.toString()
-        val res = mainBinding?.mainView?.resultText?.text.toString()
-        val com = myComment
-        if (num != "") {
-            resultList.add(0, Participant(num, res, com))
+    private fun setDataIntoViews(view: View) {
+        if (mainBinding?.mainView?.car?.text.toString() != "") {
+            viewModel.addItemToLiveData(
+                mainBinding?.mainView?.car?.text.toString(),
+                mainBinding?.mainView?.resultText?.text.toString(),
+                myComment
+            )
             mainBinding?.mainView?.car?.text = ""
             mainBinding?.mainView?.resultText?.text?.clear()
-            myComment = ""
+            myComment
         } else {
             createSnack(view)
         }

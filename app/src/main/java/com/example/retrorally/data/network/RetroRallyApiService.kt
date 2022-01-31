@@ -22,7 +22,7 @@ private val retrofit = Retrofit.Builder()
 
 interface RetroRallyApiService {
     @GET("users")
-    suspend fun getJudgeWithData(): Response<ContestDataDTO>
+    suspend fun getJudgeWithData(password : String): Response<ContestDataDTO>
 
     @GET("protocols/{id}")
     suspend fun getProtocolById()

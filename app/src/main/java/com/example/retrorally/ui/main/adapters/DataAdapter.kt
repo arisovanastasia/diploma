@@ -12,7 +12,7 @@ import com.example.retrorally.R
 import com.example.retrorally.data.models.Participant
 import com.example.retrorally.databinding.DialogLayoutBinding
 
-class DataAdapter(val c: Context, private var resultList: ArrayList<Participant>) :
+class DataAdapter(val c: Context, private var resultList: MutableList<Participant>) :
     RecyclerView.Adapter<DataAdapter.ItemViewHolder>() {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ItemViewHolder {
@@ -27,7 +27,7 @@ class DataAdapter(val c: Context, private var resultList: ArrayList<Participant>
 
     override fun getItemCount(): Int = resultList.size
 
-    fun setData(participants : ArrayList<Participant>) {
+    fun setData(participants : MutableList<Participant>) {
         resultList = participants
         notifyDataSetChanged()
     }
