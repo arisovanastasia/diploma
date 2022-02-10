@@ -1,7 +1,7 @@
 package com.example.retrorally.data.models
 
 data class Participant(
-    val number: String,
-    val score: String,
+    val participant: String,
+    val result: String,
     val comment: String
 )

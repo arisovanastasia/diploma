@@ -42,8 +42,12 @@
     <string name="send_final_button">оправить</string>
     <string name="back_button">вернуться на первую страницу</string>
     <string name="congratulations">Результаты успешно отправлены в штаб!</string>
+    <string name="take_a_picture_text">Сфотографируйте бумажные протоколы соревнования и отправьте их в штаб</string>
     <string name="error">Вы не добавили номер участника!</string>
     <string name="enter_message">Введите текст</string>
     <string name="number_hint">№</string>
     <string name="results_hint">Введите результат</string>
+    <string name="image_button">Сделать фото</string>
+    <string name="send_photo_button">Отправить фото</string>
+
 </resources>

@@ -40,8 +40,8 @@ class DataAdapter(val c: Context, private var resultList: MutableList<Participan
 
         fun onBind(result: Participant) {
 
-            number.text = result.number
-            score.text = result.score
+            number.text = result.participant
+            score.text = result.result
             inputMessage.setOnClickListener {
                 val messageView =
                     DialogLayoutBinding.inflate(LayoutInflater.from(itemView.context)).inputMessage

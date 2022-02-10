@@ -15,7 +15,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.retrorally.R
 import com.example.retrorally.data.models.Participant
-import com.example.retrorally.data.network.ContestDataDTO
+import com.example.retrorally.data.models.dto.ContestDataDTO
 import com.example.retrorally.databinding.DialogLayoutBinding
 import com.example.retrorally.databinding.FragmentJudgeBinding
 import com.example.retrorally.ui.main.adapters.DataAdapter
@@ -56,7 +56,7 @@ class JudgeFragment : Fragment() {
     }
 
     private fun observeData() {
-        viewModel.contestData.observe(this.viewLifecycleOwner) {
+        viewModel.contestLiveData.observe(this.viewLifecycleOwner) {
             setContestDataToViews(it)
         }
         viewModel.participantsLiveData.observe(this.viewLifecycleOwner) {
@@ -69,11 +69,12 @@ class JudgeFragment : Fragment() {
         mainBinding?.endTime?.text = data.timeToEnd
         mainBinding?.sector?.text = data.nameOfArea
         mainBinding?.descriptionView?.text = data.description
+        viewModel.setInitialParticipantLiveData(data.usersProtocol)
     }
 
     private fun onClickListeners() {
         mainBinding?.mainView?.addNewItemButton?.setOnClickListener {
-            setDataIntoViews(it)
+            setParticipantDataIntoViews(it)
         }
         mainBinding?.submitButton?.setOnClickListener {
             findNavController().navigate(R.id.action_judgeFragment_to_finalFragment)
@@ -114,7 +115,7 @@ class JudgeFragment : Fragment() {
         }
     }
 
-    private fun setDataIntoViews(view: View) {
+    private fun setParticipantDataIntoViews(view: View) {
         if (mainBinding?.mainView?.car?.text.toString() != "") {
             viewModel.addItemToLiveData(
                 mainBinding?.mainView?.car?.text.toString(),
@@ -145,12 +146,13 @@ class JudgeFragment : Fragment() {
 
         val dialogBinding = DialogLayoutBinding.inflate(layoutInflater)
         val input = dialogBinding.inputMessage
+        val pastComment = myComment
 
         AlertDialog.Builder(requireContext())
             .setTitle("Комментарий")
             .setView(input)
             .setPositiveButton("OK") { dialog, id ->
-                myComment = input.text.toString()
+                myComment = pastComment + input.text.toString()
                 dialog.dismiss()
             }
             .setNegativeButton("Отмена") { dialog, id ->

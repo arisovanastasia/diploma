@@ -1,6 +1,8 @@
 package com.example.retrorally.ui.main.view
 
 import android.os.Bundle
+import android.util.Log
+import android.view.Gravity
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -41,18 +43,21 @@ class AuthorizationFragment : Fragment() {
             }
         }
         viewModel.error.observe(this.viewLifecycleOwner) {
-            Toast.makeText(this.requireContext(), it, Toast.LENGTH_SHORT).show()
+            val toast = Toast.makeText(this.requireContext(), it, Toast.LENGTH_LONG)
+            toast.setGravity(Gravity.TOP,0,0)
+            toast.show()
             binding?.passwordEditText?.setText("")
         }
-        viewModel.contestData.observe(this.viewLifecycleOwner) {
-            //set data in new fragment
+        viewModel.contestLiveData.observe(this.viewLifecycleOwner) {
             goToNextScreen()
         }
     }
 
     private fun checkPassword(password: String) {
-        if (binding?.passwordEditText?.text.toString() == "") {
-            Toast.makeText(this.requireContext(), "Введите пароль!", Toast.LENGTH_SHORT).show()
+        if (password == "") {
+            val toast = Toast.makeText(this.requireContext(), "Введите пароль!", Toast.LENGTH_SHORT)
+            toast.setGravity(Gravity.CENTER_VERTICAL, 0,0)
+            toast.show()
         } else {
             viewModel.onButtonClick(password)
         }

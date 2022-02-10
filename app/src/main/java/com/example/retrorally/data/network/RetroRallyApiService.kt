@@ -1,13 +1,13 @@
 package com.example.retrorally.data.network
 
+import com.example.retrorally.data.models.dto.ContestDataDTO
+import com.example.retrorally.data.models.dto.ParticipantDTO
 import com.squareup.moshi.Moshi
 import com.squareup.moshi.kotlin.reflect.KotlinJsonAdapterFactory
 import retrofit2.Response
 import retrofit2.Retrofit
 import retrofit2.converter.moshi.MoshiConverterFactory
-import retrofit2.http.GET
-import retrofit2.http.POST
-import retrofit2.http.PUT
+import retrofit2.http.*
 
 private const val BASE_URL = "https://kkozhakin.pythonanywhere.com/api/"
 
@@ -21,17 +21,19 @@ private val retrofit = Retrofit.Builder()
     .build()
 
 interface RetroRallyApiService {
-    @GET("users")
-    suspend fun getJudgeWithData(password : String): Response<ContestDataDTO>
+    @GET("protocols")
+    suspend fun getJudgeWithData(
+        @Query("login") password: String
+    ): Response<ContestDataDTO>
 
-    @GET("protocols/{id}")
-    suspend fun getProtocolById()
+    @POST("strings/{id}")
+    suspend fun postItemInProtocol(
+        @Path("id") id : Int,
+        @Query("data") participantData : ParticipantDTO
+    )
 
-    @POST("protocols")
-    suspend fun postItemInProtocol()
-
-    @PUT("protocols/{id}")
-    suspend fun putItemInProtocolById()
+    @POST("strings/{id}")
+    suspend fun postPhotoOfProtocols()
 }
 
 object RetroRallyApi {

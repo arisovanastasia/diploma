@@ -1,6 +1,5 @@
-package com.example.retrorally.data.network
+package com.example.retrorally.data.models.dto
 
-import com.example.retrorally.data.models.Participant
 import com.squareup.moshi.Json
 
 data class ContestDataDTO(
@@ -8,5 +7,5 @@ data class ContestDataDTO(
     @Json(name = "judge_start_time") val timeToStart: String,
     @Json(name = "judge_end_time") val timeToEnd: String,
     @Json(name = "description") val description: String,
-    @Json(name = "protocol") val userProtocol: ArrayList<Participant>
+    @Json(name = "strings") val usersProtocol: List<ParticipantDTO>
 )
