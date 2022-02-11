@@ -65,8 +65,8 @@ class JudgeFragment : Fragment() {
     }
 
     private fun setContestDataToViews(data: ContestDataDTO) {
-        mainBinding?.startTime?.text = data.timeToStart
-        mainBinding?.endTime?.text = data.timeToEnd
+        mainBinding?.startTime?.text = viewModel.getLocalTime(data.timeToStart)
+        mainBinding?.endTime?.text = viewModel.getLocalTime(data.timeToEnd)
         mainBinding?.sector?.text = data.nameOfArea
         mainBinding?.descriptionView?.text = data.description
         viewModel.setInitialParticipantLiveData(data.usersProtocol)

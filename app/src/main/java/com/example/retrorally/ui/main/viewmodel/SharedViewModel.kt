@@ -10,12 +10,9 @@ import com.example.retrorally.data.models.dto.ParticipantDTO
 import com.example.retrorally.data.models.dto.ResultsDTO
 import com.example.retrorally.data.network.RetroRallyApi
 import kotlinx.coroutines.*
-import java.text.SimpleDateFormat
-import java.time.Instant
+import java.time.OffsetDateTime
 import java.time.ZoneId
 import java.time.format.DateTimeFormatter
-import java.time.format.FormatStyle
-import java.util.*
 
 class SharedViewModel : ViewModel() {
 
@@ -92,12 +89,11 @@ class SharedViewModel : ViewModel() {
         return result
     }
 
-//    fun getLocalTime(dateTime: String) : String{
-//        val formatter = SimpleDateFormat("HH:mm", Locale.getDefault())
-//        formatter.timeZone = TimeZone.getTimeZone("UTC")
-//        val date = formatter.parse(dateTime)
-//        return formatter.format(date)
-//    }
+    fun getLocalTime(dateTime: String): String {
+        val formatter = DateTimeFormatter.ofPattern("HH:mm:ss")
+        val time = OffsetDateTime.parse(dateTime).atZoneSameInstant(ZoneId.systemDefault())
+        return formatter.format(time)
+    }
 
     override fun onCleared() {
         super.onCleared()
