@@ -8,3 +8,4 @@ dependencyResolutionManagement {
 }
 rootProject.name = "Retro Rally"
 include ':app'
+include ':android6lbr'
