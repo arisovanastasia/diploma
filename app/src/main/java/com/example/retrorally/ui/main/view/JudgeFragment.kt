@@ -13,6 +13,7 @@ import androidx.fragment.app.activityViewModels
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.example.android6lbr.Autoconnect
 import com.example.retrorally.R
 import com.example.retrorally.data.models.Participant
 import com.example.retrorally.data.models.dto.ContestDataDTO
@@ -31,12 +32,29 @@ class JudgeFragment : Fragment() {
     private lateinit var resultList: ArrayList<Participant>
     private var myComment = ""
 
+    private lateinit var autoconnect: Autoconnect
+
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
         mainBinding = FragmentJudgeBinding.inflate(inflater, container, false)
         observeData()
+
+        // TODO: REMOVE IT
+        // TEMPORARY, FOR POSTER SESSION ONLY
+        autoconnect = Autoconnect(activity)
+        autoconnect.liveData.observe(this.viewLifecycleOwner) {
+            // TODO: actually do something with it
+            // doSomething(it)
+            AlertDialog.Builder(requireContext())
+                .setTitle(it)
+                .create()
+                .show()
+        }
+        // TEMPORARY, FOR POSTER SESSION ONLY
+        // TODO: REMOVE IT
+
         return mainBinding?.root
     }
 
