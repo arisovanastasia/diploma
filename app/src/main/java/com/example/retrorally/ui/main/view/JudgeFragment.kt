@@ -19,6 +19,7 @@ import com.example.retrorally.data.models.dto.ContestDataDTO
 import com.example.retrorally.databinding.DialogLayoutBinding
 import com.example.retrorally.databinding.FragmentJudgeBinding
 import com.example.retrorally.ui.main.adapters.DataAdapter
+import com.example.retrorally.ui.main.adapters.TestAdapter
 import com.example.retrorally.ui.main.viewmodel.SharedViewModel
 import com.google.android.material.snackbar.Snackbar
 
@@ -28,7 +29,9 @@ class JudgeFragment : Fragment() {
     private var mainBinding: FragmentJudgeBinding? = null
     private val viewModel: SharedViewModel by activityViewModels()
     private lateinit var adapter: DataAdapter
+    private lateinit var testAdapter: TestAdapter
     private lateinit var resultList: ArrayList<Participant>
+    private lateinit var testList: List<String>
     private var myComment = ""
 
     override fun onCreateView(
@@ -44,14 +47,22 @@ class JudgeFragment : Fragment() {
 
         super.onViewCreated(view, savedInstanceState)
         resultList = ArrayList()
+        testList = ArrayList()
         val recycler: RecyclerView = view.findViewById(R.id.results_recycler)
+        val testRecycler: RecyclerView = view.findViewById(R.id.test_recycler)
         //set adapter
         adapter = DataAdapter(this.requireContext(), resultList)
+        testAdapter = TestAdapter(this.requireContext(), testList) {
+            mainBinding?.mainView?.resultText?.setText(it)
+        }
         //set Recycler view adapter
         recycler.layoutManager = LinearLayoutManager(requireContext())
         recycler.adapter = adapter
+        testRecycler.layoutManager = LinearLayoutManager(requireContext())
+        testRecycler.adapter = testAdapter
 
         setupCarNumberInput()
+        setDataTimeFromSensors()
         onClickListeners()
     }
 
@@ -70,6 +81,10 @@ class JudgeFragment : Fragment() {
         mainBinding?.sector?.text = data.nameOfArea
         mainBinding?.descriptionView?.text = data.description
         viewModel.setInitialParticipantLiveData(data.usersProtocol)
+    }
+
+    private fun setDataTimeFromSensors() {
+        testAdapter.setTestData(arrayListOf("12:55:10", "14:12:11", "12:45:13", "21:34:23"))
     }
 
     private fun onClickListeners() {
