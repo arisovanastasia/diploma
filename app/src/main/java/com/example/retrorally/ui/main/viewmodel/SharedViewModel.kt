@@ -83,8 +83,25 @@ class SharedViewModel : ViewModel() {
 
     private fun getParticipantResult(resultsDTO: ResultsDTO): String {
         var result = ""
-        if (resultsDTO.time != null) {
-            result += "Время: ${resultsDTO.time} \n"
+        when {
+            resultsDTO.time != null -> {
+                result += "Время: ${resultsDTO.time} \n"
+            }
+            resultsDTO.cone != null -> {
+                result += "Время: ${resultsDTO.cone} \n"
+            }
+            resultsDTO.button != null -> {
+                result += "Время: ${resultsDTO.button} \n"
+            }
+            resultsDTO.square != null -> {
+                result += "Время: ${resultsDTO.square} \n"
+            }
+            resultsDTO.finish_line != null -> {
+                result += "Время: ${resultsDTO.cone} \n"
+            }
+            else -> {
+                result += "Время: ${resultsDTO.stop_line}"
+            }
         }
         return result
     }

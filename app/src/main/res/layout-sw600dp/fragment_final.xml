@@ -3,35 +3,66 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/background"
-    android:orientation="vertical">
+    android:background="@color/background">
 
     <TextView
-        android:id="@+id/congratulations_message"
-        android:layout_width="wrap_content"
+        android:id="@+id/to_do_message"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="@string/congratulations"
+        android:layout_marginHorizontal="50dp"
+        android:layout_marginTop="40dp"
+        android:background="@drawable/frame_for_text"
+        android:gravity="center"
+        android:padding="10dp"
+        android:text="@string/take_a_picture_text"
         android:textColor="@color/blue_gray_800"
-        android:textSize="23sp"
-        app:layout_constraintBottom_toTopOf="@+id/back_button"
+        android:textSize="22sp"
+        android:textStyle="bold"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
     <Button
-        android:id="@+id/back_button"
-        style="@style/greenButton"
-        android:paddingHorizontal="6dp"
+        android:id="@+id/take_image_button"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:padding="15dp"
-        android:layout_marginBottom="160dp"
-        android:text="@string/back_button"
-        android:textSize="20sp"
+        android:layout_marginTop="50dp"
+        android:layout_marginEnd="40dp"
+        android:background="@drawable/circle_button"
+        android:paddingHorizontal="10dp"
+        android:text="@string/image_button"
         android:textAllCaps="false"
+        android:textColor="@color/green_900"
+        android:textSize="20sp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/to_do_message" />
+
+    <Button
+        android:id="@+id/send_photo_button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="40dp"
+        android:layout_marginBottom="130dp"
+        android:background="@color/orange_light"
+        android:paddingHorizontal="8dp"
+        android:text="@string/send_photo_button"
+        android:textAllCaps="false"
+        android:textSize="20sp"
+        app:layout_constraintBottom_toTopOf="@+id/back_button"
+        app:layout_constraintStart_toStartOf="parent" />
+
+    <Button
+        android:id="@+id/back_button"
+        style="@style/greenButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:paddingHorizontal="6dp"
+        android:text="@string/back_button"
+        android:textAllCaps="false"
+        android:textSize="20sp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/congratulations_message" />
+        app:layout_constraintTop_toBottomOf="@+id/take_image_button" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

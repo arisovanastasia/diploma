@@ -88,13 +88,13 @@
                 android:fontFamily="casual"
                 android:gravity="center"
                 android:padding="5dp"
-                android:text="@string/number_of_sector"
                 android:textColor="@color/blue_gray_800"
                 android:textSize="25sp"
                 app:layout_constraintBottom_toTopOf="@id/enter_number_of_car"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/currentTime" />
+                app:layout_constraintTop_toBottomOf="@id/currentTime"
+                tools:text="@string/number_of_sector" />
 
             <TextView
                 android:id="@+id/enter_number_of_car"
@@ -111,22 +111,22 @@
 
             <include
                 android:id="@+id/keyboard"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/enter_number_of_car"
-                android:layout_marginStart="20dp"
                 layout="@layout/keyboard_layout"
                 android:layout_width="wrap_content"
-                android:layout_height="wrap_content" />
+                android:layout_height="wrap_content"
+                android:layout_marginStart="20dp"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/enter_number_of_car" />
 
             <TextView
                 android:id="@+id/description_view"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_margin="50dp"
-                android:textSize="17sp"
                 android:background="@drawable/frame_for_text"
                 android:maxLines="10"
                 android:padding="5dp"
+                android:textSize="17sp"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toEndOf="@+id/keyboard"
                 app:layout_constraintTop_toBottomOf="@+id/sector"

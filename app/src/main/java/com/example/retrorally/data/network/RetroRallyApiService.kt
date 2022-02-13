@@ -26,9 +26,8 @@ interface RetroRallyApiService {
         @Query("login") password: String
     ): Response<ContestDataDTO>
 
-    @POST("strings/{id}")
+    @POST("strings")
     suspend fun postItemInProtocol(
-        @Path("id") id : Int,
         @Query("data") participantData : ParticipantDTO
     )
 
