@@ -13,6 +13,7 @@ import androidx.fragment.app.activityViewModels
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.example.android6lbr.Autoconnect
 import com.example.retrorally.R
 import com.example.retrorally.data.models.Participant
 import com.example.retrorally.data.models.dto.ContestDataDTO
@@ -22,6 +23,8 @@ import com.example.retrorally.ui.main.adapters.DataAdapter
 import com.example.retrorally.ui.main.adapters.TestAdapter
 import com.example.retrorally.ui.main.viewmodel.SharedViewModel
 import com.google.android.material.snackbar.Snackbar
+import java.util.*
+import kotlin.collections.ArrayList
 
 
 class JudgeFragment : Fragment() {
@@ -34,12 +37,21 @@ class JudgeFragment : Fragment() {
     private lateinit var testList: List<String>
     private var myComment = ""
 
+    private lateinit var autoconnect: Autoconnect
+
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
         mainBinding = FragmentJudgeBinding.inflate(inflater, container, false)
         observeData()
+
+        // TODO: REMOVE IT
+        // TEMPORARY, FOR POSTER SESSION ONLY
+        autoconnect = Autoconnect(activity)
+        // TEMPORARY, FOR POSTER SESSION ONLY
+        // TODO: REMOVE IT
+
         return mainBinding?.root
     }
 
@@ -73,6 +85,14 @@ class JudgeFragment : Fragment() {
         viewModel.participantsLiveData.observe(this.viewLifecycleOwner) {
             adapter.setData(it)
         }
+        autoconnect.liveData.observe(this.viewLifecycleOwner) {
+            val timeNow = Calendar.getInstance().time
+            postTimeToList(timeNow)
+        }
+    }
+
+    private fun postTimeToList(time : Date) {
+
     }
 
     private fun setContestDataToViews(data: ContestDataDTO) {
