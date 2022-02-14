@@ -102,7 +102,7 @@ public class Autoconnect {
 					Log.d("DEVICE", "found "+ device.getName() + "  ++  " + device.getAddress());
 
 					// if the device is OK to connect - initiate the connection
-					if ("bleRIOT".equals(device.getName())){
+					if ("nrf52_MIEM".equals(device.getName())){
 						mBluetoothAdapter.cancelDiscovery(); // we are advised to do so before attempting to connect
 
 						// Try to establish a GATT connection - seems to fix problems with certain android devices

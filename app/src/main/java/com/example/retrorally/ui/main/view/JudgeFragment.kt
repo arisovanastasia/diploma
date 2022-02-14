@@ -45,13 +45,14 @@ class JudgeFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View? {
         mainBinding = FragmentJudgeBinding.inflate(inflater, container, false)
-        observeData()
 
         // TODO: REMOVE IT
         // TEMPORARY, FOR POSTER SESSION ONLY
         autoconnect = Autoconnect(activity)
         // TEMPORARY, FOR POSTER SESSION ONLY
         // TODO: REMOVE IT
+
+        observeData()
 
         return mainBinding?.root
     }
