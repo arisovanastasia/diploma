@@ -9,7 +9,7 @@ import android.widget.EditText
 import androidx.recyclerview.widget.RecyclerView
 import com.example.retrorally.R
 
-class TestAdapter(val context : Context, private var listOfItems: List<String>, private val setTimeToView : (String) -> Unit) :
+class TestAdapter(val context : Context, private var listOfItems: MutableList<String>, private val setTimeToView : (String) -> Unit) :
     RecyclerView.Adapter<TestAdapter.TestItemViewHolder>() {
 
     override fun onCreateViewHolder(
@@ -27,7 +27,7 @@ class TestAdapter(val context : Context, private var listOfItems: List<String>, 
 
     override fun getItemCount() = listOfItems.size
 
-    fun setTestData(timeList : ArrayList<String>) {
+    fun setTestData(timeList : MutableList<String>) {
         listOfItems = timeList
         notifyDataSetChanged()
     }

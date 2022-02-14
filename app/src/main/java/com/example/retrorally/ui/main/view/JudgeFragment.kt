@@ -23,6 +23,7 @@ import com.example.retrorally.ui.main.adapters.DataAdapter
 import com.example.retrorally.ui.main.adapters.TestAdapter
 import com.example.retrorally.ui.main.viewmodel.SharedViewModel
 import com.google.android.material.snackbar.Snackbar
+import java.text.SimpleDateFormat
 import java.util.*
 import kotlin.collections.ArrayList
 
@@ -34,7 +35,7 @@ class JudgeFragment : Fragment() {
     private lateinit var adapter: DataAdapter
     private lateinit var testAdapter: TestAdapter
     private lateinit var resultList: ArrayList<Participant>
-    private lateinit var testList: List<String>
+    private lateinit var testList: MutableList<String>
     private var myComment = ""
 
     private lateinit var autoconnect: Autoconnect
@@ -74,7 +75,6 @@ class JudgeFragment : Fragment() {
         testRecycler.adapter = testAdapter
 
         setupCarNumberInput()
-        setDataTimeFromSensors()
         onClickListeners()
     }
 
@@ -87,12 +87,19 @@ class JudgeFragment : Fragment() {
         }
         autoconnect.liveData.observe(this.viewLifecycleOwner) {
             val timeNow = Calendar.getInstance().time
-            postTimeToList(timeNow)
+            val sdf = SimpleDateFormat("HH:mm:ss")
+            postTimeToList(sdf.format(timeNow))
         }
     }
 
-    private fun postTimeToList(time : Date) {
+    private fun postTimeToList(time: String) {
+        testList.add(time)
+        val newList = testList
+        setDataTimeFromSensors(newList)
+    }
 
+    private fun setDataTimeFromSensors(listOfTimes: MutableList<String>) {
+        testAdapter.setTestData(listOfTimes)
     }
 
     private fun setContestDataToViews(data: ContestDataDTO) {
@@ -101,10 +108,6 @@ class JudgeFragment : Fragment() {
         mainBinding?.sector?.text = data.nameOfArea
         mainBinding?.descriptionView?.text = data.description
         viewModel.setInitialParticipantLiveData(data.usersProtocol)
-    }
-
-    private fun setDataTimeFromSensors() {
-        testAdapter.setTestData(arrayListOf("12:55:10", "14:12:11", "12:45:13", "21:34:23"))
     }
 
     private fun onClickListeners() {
