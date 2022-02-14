@@ -22,6 +22,8 @@ import com.example.retrorally.databinding.FragmentJudgeBinding
 import com.example.retrorally.ui.main.adapters.DataAdapter
 import com.example.retrorally.ui.main.viewmodel.SharedViewModel
 import com.google.android.material.snackbar.Snackbar
+import java.util.*
+import kotlin.collections.ArrayList
 
 
 class JudgeFragment : Fragment() {
@@ -44,14 +46,6 @@ class JudgeFragment : Fragment() {
         // TODO: REMOVE IT
         // TEMPORARY, FOR POSTER SESSION ONLY
         autoconnect = Autoconnect(activity)
-        autoconnect.liveData.observe(this.viewLifecycleOwner) {
-            // TODO: actually do something with it
-            // doSomething(it)
-            AlertDialog.Builder(requireContext())
-                .setTitle(it)
-                .create()
-                .show()
-        }
         // TEMPORARY, FOR POSTER SESSION ONLY
         // TODO: REMOVE IT
 
@@ -80,6 +74,14 @@ class JudgeFragment : Fragment() {
         viewModel.participantsLiveData.observe(this.viewLifecycleOwner) {
             adapter.setData(it)
         }
+        autoconnect.liveData.observe(this.viewLifecycleOwner) {
+            val timeNow = Calendar.getInstance().time
+            postTimeToList(timeNow)
+        }
+    }
+
+    private fun postTimeToList(time : Date) {
+
     }
 
     private fun setContestDataToViews(data: ContestDataDTO) {
