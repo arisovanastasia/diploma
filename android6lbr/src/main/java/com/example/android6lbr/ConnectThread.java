@@ -2,8 +2,6 @@ package com.example.android6lbr;
 
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
-import android.bluetooth.BluetoothGatt;
-import android.bluetooth.BluetoothGattCallback;
 import android.bluetooth.BluetoothSocket;
 import android.util.Log;
 
@@ -42,7 +40,7 @@ public class ConnectThread extends Thread {
 
     private boolean routerSolicitationReceived = false;
 
-    public Autoconnect mConnManager;
+    public LbrService mConnManager;
     public boolean fullCompression = false;
     public long timespan = 0;
 
@@ -72,7 +70,7 @@ public class ConnectThread extends Thread {
     }
     */
 
-    public ConnectThread(Autoconnect connManager, BluetoothDevice device) {
+    public ConnectThread(LbrService connManager, BluetoothDevice device) {
         mConnManager = connManager;
 
         mSelectedDevice = device;

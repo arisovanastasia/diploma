@@ -1,6 +1,9 @@
 package com.example.retrorally.ui.main.view
 
+import android.app.Activity
 import android.app.AlertDialog
+import android.content.Intent
+import android.net.VpnService
 import android.os.Bundle
 import android.view.Gravity
 import android.view.LayoutInflater
@@ -13,7 +16,7 @@ import androidx.fragment.app.activityViewModels
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import com.example.android6lbr.Autoconnect
+import com.example.android6lbr.LbrService
 import com.example.retrorally.R
 import com.example.retrorally.data.models.Participant
 import com.example.retrorally.data.models.dto.ContestDataDTO
@@ -38,23 +41,40 @@ class JudgeFragment : Fragment() {
     private lateinit var testList: MutableList<String>
     private var myComment = ""
 
-    private lateinit var autoconnect: Autoconnect
-
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
         mainBinding = FragmentJudgeBinding.inflate(inflater, container, false)
 
-        // TODO: REMOVE IT
-        // TEMPORARY, FOR POSTER SESSION ONLY
-        autoconnect = Autoconnect(activity)
-        // TEMPORARY, FOR POSTER SESSION ONLY
-        // TODO: REMOVE IT
+        // Start a 6LoWPAN VPN-like service here
+        // TODO: should it be run here, or in some more convenient class? where we should create it?
+        val intent = VpnService.prepare(context)
+        if (intent != null) {
+            startActivityForResult(intent, 0)
+        } else {
+            onActivityResult(0, Activity.RESULT_OK, null)
+        }
 
         observeData()
 
         return mainBinding?.root
+    }
+
+    private fun getServiceIntent(): Intent {
+        return Intent(context, LbrService::class.java)
+    }
+
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        if (resultCode == Activity.RESULT_OK) {
+            context?.startService(getServiceIntent().setAction(LbrService.ACTION_CONNECT))
+        }
+        super.onActivityResult(requestCode, resultCode, data)
+    }
+
+    override fun onDestroy() {
+        context?.startService(getServiceIntent().setAction(LbrService.ACTION_DISCONNECT))
+        super.onDestroy()
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -86,7 +106,7 @@ class JudgeFragment : Fragment() {
         viewModel.participantsLiveData.observe(this.viewLifecycleOwner) {
             adapter.setData(it)
         }
-        autoconnect.liveData.observe(this.viewLifecycleOwner) {
+        LbrService.liveData.observe(this.viewLifecycleOwner) {
             val timeNow = Calendar.getInstance().time
             val sdf = SimpleDateFormat("HH:mm:ss")
             postTimeToList(sdf.format(timeNow))
