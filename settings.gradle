@@ -8,4 +8,5 @@ dependencyResolutionManagement {
 }
 rootProject.name = "Retro Rally"
 include ':app'
-include ':android6lbr'
+include 'android6lbr'
+project(':android6lbr').projectDir = file('android6lbr/app')

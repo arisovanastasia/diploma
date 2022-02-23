@@ -16,7 +16,7 @@ import androidx.fragment.app.activityViewModels
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import com.example.android6lbr.LbrService
+import com.example.ipspapplication.LbrService
 import com.example.retrorally.R
 import com.example.retrorally.data.models.Participant
 import com.example.retrorally.data.models.dto.ContestDataDTO

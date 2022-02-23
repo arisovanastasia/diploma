@@ -1,0 +1,4 @@
+[submodule "android6lbr"]
+	path = android6lbr
+	url = https://git.miem.hse.ru/1003/android6lbr.git
+	branch = project1003
