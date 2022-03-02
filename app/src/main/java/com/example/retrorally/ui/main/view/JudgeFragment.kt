@@ -8,6 +8,8 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
 import android.widget.FrameLayout
+import android.widget.Toast
+import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.navigation.fragment.findNavController
@@ -30,6 +32,8 @@ class JudgeFragment : Fragment() {
     private lateinit var adapter: DataAdapter
     private lateinit var resultList: ArrayList<Participant>
     private var myComment = ""
+    private var idOfProtocol = 0
+    private var origId = 0
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -46,7 +50,9 @@ class JudgeFragment : Fragment() {
         resultList = ArrayList()
         val recycler: RecyclerView = view.findViewById(R.id.results_recycler)
         //set adapter
-        adapter = DataAdapter(this.requireContext(), resultList)
+        adapter = DataAdapter(this.requireContext(), resultList) { participant, position ->
+            onParticipantChanged(participant, position)
+        }
         //set Recycler view adapter
         recycler.layoutManager = LinearLayoutManager(requireContext())
         recycler.adapter = adapter
@@ -56,20 +62,44 @@ class JudgeFragment : Fragment() {
     }
 
     private fun observeData() {
+        viewModel.loading.observe(this.viewLifecycleOwner) {
+            mainBinding?.progressBar?.isVisible = it
+        }
+        viewModel.error.observe(this.viewLifecycleOwner) {
+            val toast = Toast.makeText(
+                this.requireContext(),
+                it,
+                Toast.LENGTH_LONG
+            )
+            toast.setGravity(Gravity.TOP, 0, 0)
+            toast.show()
+        }
         viewModel.contestLiveData.observe(this.viewLifecycleOwner) {
             setContestDataToViews(it)
         }
         viewModel.participantsLiveData.observe(this.viewLifecycleOwner) {
-            adapter.setData(it)
+            if (it.isEmpty()) {
+                val toast = Toast.makeText(
+                    this.requireContext(),
+                    "Протокол готов к заполнению!",
+                    Toast.LENGTH_LONG
+                )
+                toast.setGravity(Gravity.CENTER, 0, 0)
+                toast.show()
+            } else {
+                adapter.setData(it)
+            }
         }
     }
 
     private fun setContestDataToViews(data: ContestDataDTO) {
         mainBinding?.startTime?.text = viewModel.getLocalTime(data.timeToStart)
         mainBinding?.endTime?.text = viewModel.getLocalTime(data.timeToEnd)
-        mainBinding?.sector?.text = getString(R.string.number_of_sector).plus(" ").plus(data.nameOfArea)
+        mainBinding?.sector?.text =
+            getString(R.string.number_of_sector).plus(" ").plus(data.nameOfArea)
         mainBinding?.descriptionView?.text = data.description
         viewModel.setInitialParticipantLiveData(data.usersProtocol)
+        idOfProtocol = data.id
     }
 
     private fun onClickListeners() {
@@ -116,18 +146,31 @@ class JudgeFragment : Fragment() {
     }
 
     private fun setParticipantDataIntoViews(view: View) {
-        if (mainBinding?.mainView?.car?.text.toString() != "") {
-            viewModel.addItemToLiveData(
+        if (mainBinding?.mainView?.car?.text.toString().isNotEmpty()) {
+            viewModel.postParticipant(
+                origId,
+                idOfProtocol,
                 mainBinding?.mainView?.car?.text.toString(),
                 mainBinding?.mainView?.resultText?.text.toString(),
                 myComment
             )
             mainBinding?.mainView?.car?.text = ""
             mainBinding?.mainView?.resultText?.text?.clear()
-            myComment
+            myComment = ""
         } else {
             createSnack(view)
         }
+    }
+
+    private fun onParticipantChanged(participant: Participant, targetPosition: Int) {
+        viewModel.postParticipant(
+            participant.idOfString,
+            idOfProtocol,
+            participant.participant,
+            participant.result,
+            participant.comment,
+            targetPosition
+        )
     }
 
     private fun createSnack(view: View) {
@@ -143,7 +186,6 @@ class JudgeFragment : Fragment() {
     }
 
     private fun writeComment() {
-
         val dialogBinding = DialogLayoutBinding.inflate(layoutInflater)
         val input = dialogBinding.inputMessage
         val pastComment = myComment

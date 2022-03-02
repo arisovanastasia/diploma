@@ -1,7 +1,6 @@
 package com.example.retrorally.ui.main.view
 
 import android.os.Bundle
-import android.util.Log
 import android.view.Gravity
 import android.view.LayoutInflater
 import android.view.View
@@ -36,15 +35,11 @@ class AuthorizationFragment : Fragment() {
 
     private fun startObserve() {
         viewModel.loading.observe(this.viewLifecycleOwner) {
-            if (it) {
-                binding?.progressBar?.isVisible = it
-            } else {
-                binding?.progressBar?.isVisible = it
-            }
+            binding?.progressBar?.isVisible = it
         }
         viewModel.error.observe(this.viewLifecycleOwner) {
             val toast = Toast.makeText(this.requireContext(), it, Toast.LENGTH_LONG)
-            toast.setGravity(Gravity.TOP,0,0)
+            toast.setGravity(Gravity.TOP, 0, 0)
             toast.show()
             binding?.passwordEditText?.setText("")
         }
@@ -56,7 +51,7 @@ class AuthorizationFragment : Fragment() {
     private fun checkPassword(password: String) {
         if (password == "") {
             val toast = Toast.makeText(this.requireContext(), "Введите пароль!", Toast.LENGTH_SHORT)
-            toast.setGravity(Gravity.CENTER_VERTICAL, 0,0)
+            toast.setGravity(Gravity.CENTER_VERTICAL, 0, 0)
             toast.show()
         } else {
             viewModel.onButtonClick(password)

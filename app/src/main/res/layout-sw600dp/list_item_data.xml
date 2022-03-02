@@ -6,7 +6,7 @@
     android:layout_height="wrap_content"
     android:padding="6dp">
 
-    <TextView
+    <EditText
         android:id="@+id/number_of_car"
         android:layout_width="90dp"
         android:layout_height="wrap_content"
@@ -23,7 +23,7 @@
         app:layout_constraintTop_toTopOf="@+id/result"
         tools:text="322245" />
 
-    <TextView
+    <EditText
         android:id="@+id/result"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
@@ -50,7 +50,17 @@
         android:padding="5dp"
         android:src="@drawable/ic_baseline_comment_24"
         app:layout_constraintBottom_toBottomOf="@+id/result"
-        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintEnd_toStartOf="@+id/on_change_button"
         app:layout_constraintTop_toTopOf="@+id/result" />
+
+    <ImageButton
+        android:id="@+id/on_change_button"
+        android:layout_width="40dp"
+        android:layout_height="40dp"
+        android:visibility="gone"
+        android:background= "@drawable/ic_baseline_check_circle_24"
+        app:layout_constraintBottom_toBottomOf="@id/comment"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="@id/comment" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

@@ -16,4 +16,5 @@
 
     <color name="background">#f3e5f5</color>
     <color name="comment_button">#C5EC98</color>
+    <color name="progress_bar">#71052A</color>
 </resources>
