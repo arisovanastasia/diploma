@@ -5,17 +5,16 @@ import com.example.retrorally.data.models.dto.ParticipantDTO
 import com.example.retrorally.data.models.dto.ResponseDTO
 import com.squareup.moshi.Moshi
 import com.squareup.moshi.kotlin.reflect.KotlinJsonAdapterFactory
+import okhttp3.Interceptor
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Response
 import retrofit2.Retrofit
 import retrofit2.converter.moshi.MoshiConverterFactory
-import retrofit2.http.Body
-import retrofit2.http.GET
-import retrofit2.http.POST
-import retrofit2.http.Query
+import retrofit2.http.*
 
 private const val BASE_URL = "https://kkozhakin.pythonanywhere.com/api/"
+
 private val interceptor = HttpLoggingInterceptor().setLevel(HttpLoggingInterceptor.Level.BODY)
 
 private val moshi = Moshi.Builder()
@@ -40,6 +39,7 @@ interface RetroRallyApiService {
 
     @POST("strings/")
     suspend fun postItemInProtocol(
+        @Header("api-key") apiKey : String,
         @Body data: ParticipantDTO
     ) : Response<ResponseDTO>
 

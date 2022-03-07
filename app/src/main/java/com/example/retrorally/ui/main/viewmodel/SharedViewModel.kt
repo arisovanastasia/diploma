@@ -28,6 +28,7 @@ class SharedViewModel : ViewModel() {
     private val _participantsLiveData = MutableLiveData<MutableList<Participant>>()
     val participantsLiveData: LiveData<MutableList<Participant>> = _participantsLiveData
 
+    private var apiKey = ""
     private var job: Job? = null
     private val apiService = RetroRallyApi.retrofitService
     private val exceptionHandler = CoroutineExceptionHandler { _, throwable ->
@@ -55,6 +56,7 @@ class SharedViewModel : ViewModel() {
 
     fun onButtonClick(password: String) {
         _loading.value = true
+        apiKey = password
         getContestData(password)
     }
 
@@ -104,7 +106,7 @@ class SharedViewModel : ViewModel() {
         _loading.value = true
         job = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
             try {
-                val postResponse = apiService.postItemInProtocol(data)
+                val postResponse = apiService.postItemInProtocol(apiKey, data)
                 val responseBody = postResponse.body()
                 withContext(Dispatchers.Main) {
                     if (postResponse.isSuccessful && responseBody != null) {

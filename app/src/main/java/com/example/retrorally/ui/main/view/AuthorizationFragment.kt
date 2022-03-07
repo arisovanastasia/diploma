@@ -38,8 +38,8 @@ class AuthorizationFragment : Fragment() {
             binding?.progressBar?.isVisible = it
         }
         viewModel.error.observe(this.viewLifecycleOwner) {
-            val toast = Toast.makeText(this.requireContext(), it, Toast.LENGTH_LONG)
-            toast.setGravity(Gravity.TOP, 0, 0)
+            val toast = Toast.makeText(this.requireContext(), "Пользователь не найден, повторите попытку!", Toast.LENGTH_LONG)
+            toast.setGravity(Gravity.CENTER, 0, 0)
             toast.show()
             binding?.passwordEditText?.setText("")
         }
