@@ -2,7 +2,9 @@ package com.example.retrorally.ui.main.view
 
 import android.app.Activity
 import android.app.AlertDialog
+import android.content.Context
 import android.content.Intent
+import android.net.ConnectivityManager
 import android.net.VpnService
 import android.os.Bundle
 import android.view.Gravity
@@ -53,14 +55,18 @@ class JudgeFragment : Fragment() {
 
         // Start a 6LoWPAN VPN-like service here
         // TODO: should it be run here, or in some more convenient class? where we should create it?
+        val connectivityManager = context?.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
+        val currentNetwork = connectivityManager.activeNetwork
         val intent = VpnService.prepare(context)
         if (intent != null) {
             startActivityForResult(intent, 0)
         } else {
             onActivityResult(0, Activity.RESULT_OK, null)
         }
-
         viewModel.startCoAPServer() // does nothing if server already started
+        connectivityManager.bindProcessToNetwork(currentNetwork) // protect the app's external traffic from VPN
+        // A better option could be bypassing all of the traffic into the VPN Service, we will need to analyze TCP and UDP headers
+
         observeData()
 
         return mainBinding?.root
