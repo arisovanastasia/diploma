@@ -25,7 +25,7 @@
             </intent-filter>
         </activity>
 
-        <service android:name="com.example.android6lbr.LbrService"
+        <service android:name="com.example.ipspapplication.LbrService"
             android:permission="android.permission.BIND_VPN_SERVICE"
             android:exported="false">
             <intent-filter>

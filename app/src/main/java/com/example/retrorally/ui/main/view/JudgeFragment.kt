@@ -56,6 +56,7 @@ class JudgeFragment : Fragment() {
             onActivityResult(0, Activity.RESULT_OK, null)
         }
 
+        viewModel.startCoAPServer() // does nothing if server already started
         observeData()
 
         return mainBinding?.root
@@ -106,7 +107,7 @@ class JudgeFragment : Fragment() {
         viewModel.participantsLiveData.observe(this.viewLifecycleOwner) {
             adapter.setData(it)
         }
-        LbrService.liveData.observe(this.viewLifecycleOwner) {
+        viewModel.sensorsLiveData.observe(this.viewLifecycleOwner) {
             val timeNow = Calendar.getInstance().time
             val sdf = SimpleDateFormat("HH:mm:ss")
             postTimeToList(sdf.format(timeNow))
@@ -220,6 +221,5 @@ class JudgeFragment : Fragment() {
             .create()
             .show()
     }
-
 
 }
