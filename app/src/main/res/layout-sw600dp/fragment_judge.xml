@@ -88,13 +88,13 @@
                 android:fontFamily="casual"
                 android:gravity="center"
                 android:padding="5dp"
-                android:text="@string/number_of_sector"
                 android:textColor="@color/blue_gray_800"
                 android:textSize="25sp"
                 app:layout_constraintBottom_toTopOf="@id/enter_number_of_car"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/currentTime" />
+                app:layout_constraintTop_toBottomOf="@id/currentTime"
+                tools:text="@string/number_of_sector" />
 
             <TextView
                 android:id="@+id/enter_number_of_car"
@@ -122,7 +122,7 @@
                 android:id="@+id/description_view"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:layout_margin="30dp"
+                android:layout_margin="50dp"
                 android:background="@drawable/frame_for_text"
                 android:maxLines="10"
                 android:padding="5dp"
@@ -173,6 +173,19 @@
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/main_view" />
+
+            <ProgressBar
+                android:id="@+id/progress_bar"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:layout_marginBottom="300dp"
+                android:indeterminateTint="@color/progress_bar"
+                android:visibility="invisible"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
 
         </androidx.constraintlayout.widget.ConstraintLayout>
     </androidx.core.widget.NestedScrollView>

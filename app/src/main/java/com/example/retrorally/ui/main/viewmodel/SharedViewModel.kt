@@ -7,6 +7,7 @@ import androidx.lifecycle.ViewModel
 import com.example.retrorally.data.models.Participant
 import com.example.retrorally.data.models.dto.ContestDataDTO
 import com.example.retrorally.data.models.dto.ParticipantDTO
+import com.example.retrorally.data.models.dto.ResponseDTO
 import com.example.retrorally.data.models.dto.ResultsDTO
 import com.example.retrorally.data.network.RetroRallyApi
 import com.mbed.coap.exception.CoapCodeException
@@ -16,9 +17,11 @@ import com.mbed.coap.server.CoapHandler
 import com.mbed.coap.server.CoapServer
 import com.mbed.coap.utils.CoapResource
 import kotlinx.coroutines.*
+import java.text.SimpleDateFormat
 import java.time.OffsetDateTime
 import java.time.ZoneId
 import java.time.format.DateTimeFormatter
+import java.util.*
 
 class SharedViewModel : ViewModel() {
 
@@ -28,7 +31,6 @@ class SharedViewModel : ViewModel() {
     val loading: LiveData<Boolean> = _loading
     private val _contestLiveData = MutableLiveData<ContestDataDTO>()
     val contestLiveData: LiveData<ContestDataDTO> = _contestLiveData
-
     private val _participantsLiveData = MutableLiveData<MutableList<Participant>>()
     val participantsLiveData: LiveData<MutableList<Participant>> = _participantsLiveData
 
@@ -36,7 +38,10 @@ class SharedViewModel : ViewModel() {
     val sensorsLiveData: MutableLiveData<String> = _sensorsLiveData
     private var server: CoapServer? = null
 
+    private var apiKey = ""
+
     private var job: Job? = null
+    private val apiService = RetroRallyApi.retrofitService
     private val exceptionHandler = CoroutineExceptionHandler { _, throwable ->
         _error.value = "Exception handled : ${throwable.localizedMessage}"
     }
@@ -44,14 +49,13 @@ class SharedViewModel : ViewModel() {
     private fun getContestData(password: String) {
         job = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
             try {
-                val response = RetroRallyApi.retrofitService.getJudgeWithData(password)
-                Log.d("code", "response code is ${response.code()}")
+                val getResponse = apiService.getJudgeWithData(password)
                 withContext(Dispatchers.Main) {
-                    if (response.isSuccessful) {
-                        _contestLiveData.value = response.body()
+                    if (getResponse.isSuccessful) {
+                        _contestLiveData.value = getResponse.body()
                         _loading.value = false
                     } else {
-                        _error.value = response.message()
+                        _error.value = getResponse.message()
                         _loading.value = false
                     }
                 }
@@ -63,26 +67,79 @@ class SharedViewModel : ViewModel() {
 
     fun onButtonClick(password: String) {
         _loading.value = true
+        apiKey = password
         getContestData(password)
     }
 
-    fun addItemToLiveData(num: String, score: String, comment: String) {
-        postParticipantDataToProtocol(num, score, comment)
-        _participantsLiveData.value?.add(
-            0,
-            Participant(num, score, comment)
-        )
-        _participantsLiveData.value = _participantsLiveData.value
+    private fun addItemToLiveData(participant: Participant, targetPosition: Int? = null) {
+        val participants = _participantsLiveData.value
+        if (targetPosition != null) {
+            participants?.removeAt(targetPosition)
+            participants?.add(targetPosition, participant)
+        } else {
+            participants?.add(0, participant)
+        }
+        _participantsLiveData.value = participants ?: mutableListOf()
     }
 
-    private fun postParticipantDataToProtocol(num: String, score: String, comment: String) {
+    private fun mapDtoToParticipant(participantDTO: ResponseDTO): Participant {
+        return Participant(
+            participantDTO.responseId,
+            participantDTO.responseParticipantNumber,
+            getParticipantResult(participantDTO.responseResult),
+            participantDTO.responseComment
+        )
+    }
 
+    fun postParticipant(
+        origId: Int,
+        idOfProtocol: Int,
+        num: String,
+        score: String,
+        comment: String,
+        targetPosition: Int? = null
+    ) {
+        val time = Calendar.getInstance().time
+        val sdf = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'")
+        val participantDto = ParticipantDTO(
+            origId,
+            idOfProtocol,
+            sdf.format(time),
+            num,
+            ResultsDTO(score),
+            comment,
+            ""
+        )
+        postJsonToProtocol(participantDto, targetPosition)
+    }
+
+    private fun postJsonToProtocol(data: ParticipantDTO, targetPosition: Int? = null) {
+        _loading.value = true
+        job = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
+            try {
+                val postResponse = apiService.postItemInProtocol(apiKey, data)
+                val responseBody = postResponse.body()
+                withContext(Dispatchers.Main) {
+                    if (postResponse.isSuccessful && responseBody != null) {
+                        val participantDto = mapDtoToParticipant(responseBody)
+                        addItemToLiveData(participantDto, targetPosition)
+                        _loading.value = false
+                    } else {
+                        _error.value = postResponse.message()
+                        _loading.value = false
+                    }
+                }
+            } catch (e: Exception) {
+                Log.d("MyError", "${e.message}")
+            }
+        }
     }
 
     fun setInitialParticipantLiveData(participantsDTO: List<ParticipantDTO>) {
         _participantsLiveData.value =
             participantsDTO.map {
                 Participant(
+                    it.origId,
                     it.participantNumber,
                     getParticipantResult(it.result),
                     it.comment
@@ -93,8 +150,25 @@ class SharedViewModel : ViewModel() {
 
     private fun getParticipantResult(resultsDTO: ResultsDTO): String {
         var result = ""
-        if (resultsDTO.time != null) {
-            result += "Время: ${resultsDTO.time} \n"
+        when {
+            resultsDTO.time != null -> {
+                result += "${resultsDTO.time}"
+            }
+            resultsDTO.cone != null -> {
+                result += "${resultsDTO.cone} \n"
+            }
+            resultsDTO.button != null -> {
+                result += "${resultsDTO.button} \n"
+            }
+            resultsDTO.square != null -> {
+                result += "${resultsDTO.square} \n"
+            }
+            resultsDTO.finish_line != null -> {
+                result += "${resultsDTO.cone} \n"
+            }
+            else -> {
+                result += "${resultsDTO.stop_line}"
+            }
         }
         return result
     }

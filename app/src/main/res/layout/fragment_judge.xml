@@ -83,13 +83,13 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:fontFamily="casual"
-                android:text="@string/number_of_sector"
                 android:textColor="@color/blue_gray_800"
                 android:textSize="20sp"
                 app:layout_constraintBottom_toTopOf="@id/enter_number_of_car"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/currentTime" />
+                app:layout_constraintTop_toBottomOf="@id/currentTime"
+                tools:text="@string/number_of_sector" />
 
             <TextView
                 android:id="@+id/enter_number_of_car"
