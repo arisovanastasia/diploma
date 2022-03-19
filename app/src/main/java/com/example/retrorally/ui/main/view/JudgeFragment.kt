@@ -7,6 +7,7 @@ import android.content.Intent
 import android.net.ConnectivityManager
 import android.net.VpnService
 import android.os.Bundle
+import android.util.Log
 import android.view.Gravity
 import android.view.LayoutInflater
 import android.view.View
@@ -30,6 +31,10 @@ import com.example.retrorally.ui.main.adapters.DataAdapter
 import com.example.retrorally.ui.main.adapters.TestAdapter
 import com.example.retrorally.ui.main.viewmodel.SharedViewModel
 import com.google.android.material.snackbar.Snackbar
+import kotlinx.coroutines.*
+import java.net.DatagramPacket
+import java.net.DatagramSocket
+import java.net.Inet6Address
 import java.text.SimpleDateFormat
 import java.util.*
 import kotlin.collections.ArrayList
@@ -63,9 +68,48 @@ class JudgeFragment : Fragment() {
         } else {
             onActivityResult(0, Activity.RESULT_OK, null)
         }
+
+        // run a separate thread for networking
+        CoroutineScope(Dispatchers.IO).launch{
+            // Add a socket to test passing packets to VPN
+            val s = DatagramSocket(1234)
+            s.soTimeout = 20; // a 20 ms timeout to receive something
+
+            var i = 0;
+
+            while(true) {
+                val byteArray = ("test" + i.toString()).toByteArray()
+                val addr = Inet6Address.getByName("2001:d8::2")
+                val p = DatagramPacket(byteArray, byteArray.size, addr, 666)
+
+                try {
+                    s.send(p)
+                } catch (e : java.io.IOException){
+                    // do nothing
+                    Log.i("udp", "Send failed")
+                }
+
+                try {
+                    s.receive(p)
+                } catch (e : java.io.IOException) {
+                    // do nothing
+                    Log.i("udp", "Receive failed")
+                } catch (e : java.net.SocketTimeoutException) {
+                    // do nothing
+                    Log.i("udp", "Receive timeout expired")
+                }
+
+                Thread.sleep(1000)
+                i++
+            }
+        }
+
         viewModel.startCoAPServer() // does nothing if server already started
-        connectivityManager.bindProcessToNetwork(currentNetwork) // protect the app's external traffic from VPN
+        // TODO: commenting the next line breaks normal app traffic; instead, we should watch for changing of default network
+        // and do the following: start CoAP server and UDP traffic immediately after the app's default network becomes a VPN,
+        // then bind the process to a more sane network
         // A better option could be bypassing all of the traffic into the VPN Service, we will need to analyze TCP and UDP headers
+        // connectivityManager.bindProcessToNetwork(currentNetwork) // protect the app's external traffic from VPN
 
         observeData()
 
