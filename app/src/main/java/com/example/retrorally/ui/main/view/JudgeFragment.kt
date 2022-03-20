@@ -29,6 +29,7 @@ import com.example.retrorally.databinding.FragmentJudgeBinding
 import com.example.retrorally.ui.main.adapters.DataAdapter
 import com.example.retrorally.ui.main.adapters.TestAdapter
 import com.example.retrorally.ui.main.viewmodel.SharedViewModel
+import com.example.retrorally.ui.main.viewmodel.SensorsViewModel
 import com.google.android.material.snackbar.Snackbar
 import kotlinx.coroutines.*
 import java.net.DatagramPacket
@@ -43,6 +44,7 @@ class JudgeFragment : Fragment() {
 
     private var mainBinding: FragmentJudgeBinding? = null
     private val viewModel: SharedViewModel by activityViewModels()
+    private val sensorsViewModel: SensorsViewModel by activityViewModels()
     private lateinit var adapter: DataAdapter
     private lateinit var testAdapter: TestAdapter
     private lateinit var resultList: ArrayList<Participant>
@@ -71,7 +73,6 @@ class JudgeFragment : Fragment() {
         // run a separate thread for networking
         CoroutineScope(Dispatchers.IO).launch{
             // Add a socket to test passing packets to VPN
-            //Thread.sleep(10000)
             val s = DatagramSocket(1234)
             s.soTimeout = 20; // a 20 ms timeout to receive something
 
@@ -104,7 +105,7 @@ class JudgeFragment : Fragment() {
             }
         }
 
-        viewModel.startCoAPServer() // does nothing if server already started
+        sensorsViewModel.startCoAPServer() // does nothing if server already started
         observeData()
 
         return mainBinding?.root
@@ -179,10 +180,9 @@ class JudgeFragment : Fragment() {
                 adapter.setData(it)
             }
         }
-        viewModel.sensorsLiveData.observe(this.viewLifecycleOwner) {
-            val timeNow = Calendar.getInstance().time
+        sensorsViewModel.sensorsLiveData.observe(this.viewLifecycleOwner) {
             val sdf = SimpleDateFormat("HH:mm:ss")
-            postTimeToList(sdf.format(timeNow))
+            postTimeToList(sdf.format(it.time2))
         }
     }
 
