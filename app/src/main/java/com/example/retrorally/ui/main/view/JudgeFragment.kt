@@ -4,8 +4,7 @@ import android.app.Activity
 import android.app.AlertDialog
 import android.content.Context
 import android.content.Intent
-import android.net.ConnectivityManager
-import android.net.VpnService
+import android.net.*
 import android.os.Bundle
 import android.util.Log
 import android.view.Gravity
@@ -52,6 +51,8 @@ class JudgeFragment : Fragment() {
     private var idOfProtocol = 0
     private var origId = 0
 
+    //private lateinit var bestNetworkCallback: BestNetworkCallback
+
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -60,8 +61,6 @@ class JudgeFragment : Fragment() {
 
         // Start a 6LoWPAN VPN-like service here
         // TODO: should it be run here, or in some more convenient class? where we should create it?
-        val connectivityManager = context?.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
-        val currentNetwork = connectivityManager.activeNetwork
         val intent = VpnService.prepare(context)
         if (intent != null) {
             startActivityForResult(intent, 0)
@@ -72,6 +71,7 @@ class JudgeFragment : Fragment() {
         // run a separate thread for networking
         CoroutineScope(Dispatchers.IO).launch{
             // Add a socket to test passing packets to VPN
+            //Thread.sleep(10000)
             val s = DatagramSocket(1234)
             s.soTimeout = 20; // a 20 ms timeout to receive something
 
@@ -86,17 +86,17 @@ class JudgeFragment : Fragment() {
                     s.send(p)
                 } catch (e : java.io.IOException){
                     // do nothing
-                    Log.i("udp", "Send failed")
+                    Log.i("udp", "Send failed " + e.message)
                 }
 
                 try {
                     s.receive(p)
-                } catch (e : java.io.IOException) {
-                    // do nothing
-                    Log.i("udp", "Receive failed")
                 } catch (e : java.net.SocketTimeoutException) {
                     // do nothing
                     Log.i("udp", "Receive timeout expired")
+                } catch (e : java.io.IOException) {
+                    // do nothing
+                    Log.i("udp", "Receive failed " + e.message)
                 }
 
                 Thread.sleep(1000)
@@ -105,12 +105,6 @@ class JudgeFragment : Fragment() {
         }
 
         viewModel.startCoAPServer() // does nothing if server already started
-        // TODO: commenting the next line breaks normal app traffic; instead, we should watch for changing of default network
-        // and do the following: start CoAP server and UDP traffic immediately after the app's default network becomes a VPN,
-        // then bind the process to a more sane network
-        // A better option could be bypassing all of the traffic into the VPN Service, we will need to analyze TCP and UDP headers
-        // connectivityManager.bindProcessToNetwork(currentNetwork) // protect the app's external traffic from VPN
-
         observeData()
 
         return mainBinding?.root
@@ -313,5 +307,4 @@ class JudgeFragment : Fragment() {
             .create()
             .show()
     }
-
 }
