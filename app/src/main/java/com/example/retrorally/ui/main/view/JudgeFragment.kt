@@ -53,7 +53,7 @@ class JudgeFragment : Fragment() {
     private var idOfProtocol = 0
     private var origId = 0
 
-    //private lateinit var bestNetworkCallback: BestNetworkCallback
+    private var udpTestJob: Job? = null
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -71,37 +71,41 @@ class JudgeFragment : Fragment() {
         }
 
         // run a separate thread for networking
-        CoroutineScope(Dispatchers.IO).launch{
+        udpTestJob = CoroutineScope(Dispatchers.IO).launch{
             // Add a socket to test passing packets to VPN
-            val s = DatagramSocket(1234)
-            s.soTimeout = 20; // a 20 ms timeout to receive something
+            try {
+                val s = DatagramSocket(1234)
+                s.soTimeout = 20; // a 20 ms timeout to receive something
 
-            var i = 0;
+                var i = 0;
 
-            while(true) {
-                val byteArray = ("test" + i.toString()).toByteArray()
-                val addr = Inet6Address.getByName("2001:d8::2")
-                val p = DatagramPacket(byteArray, byteArray.size, addr, 666)
+                while (true) {
+                    val byteArray = ("test" + i.toString()).toByteArray()
+                    val addr = Inet6Address.getByName("2001:d8::2")
+                    val p = DatagramPacket(byteArray, byteArray.size, addr, 666)
 
-                try {
-                    s.send(p)
-                } catch (e : java.io.IOException){
-                    // do nothing
-                    Log.i("udp", "Send failed " + e.message)
+                    try {
+                        s.send(p)
+                    } catch (e: java.io.IOException) {
+                        // do nothing
+                        Log.i("udp", "Send failed " + e.message)
+                    }
+
+                    try {
+                        s.receive(p)
+                    } catch (e: java.net.SocketTimeoutException) {
+                        // do nothing
+                        Log.i("udp", "Receive timeout expired")
+                    } catch (e: java.io.IOException) {
+                        // do nothing
+                        Log.i("udp", "Receive failed " + e.message)
+                    }
+
+                    Thread.sleep(1000)
+                    i++
                 }
-
-                try {
-                    s.receive(p)
-                } catch (e : java.net.SocketTimeoutException) {
-                    // do nothing
-                    Log.i("udp", "Receive timeout expired")
-                } catch (e : java.io.IOException) {
-                    // do nothing
-                    Log.i("udp", "Receive failed " + e.message)
-                }
-
-                Thread.sleep(1000)
-                i++
+            } catch (e : java.net.BindException){
+                // do nothing, it means another udpTestJob is still running
             }
         }
 
@@ -120,6 +124,11 @@ class JudgeFragment : Fragment() {
             context?.startService(getServiceIntent().setAction(LbrService.ACTION_CONNECT))
         }
         super.onActivityResult(requestCode, resultCode, data)
+    }
+
+    override fun onDestroyView() {
+        udpTestJob?.cancel()
+        super.onDestroyView()
     }
 
     override fun onDestroy() {
