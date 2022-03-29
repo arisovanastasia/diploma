@@ -57,4 +57,5 @@ dependencies {
     implementation "org.jetbrains.kotlinx:kotlinx-coroutines-core:1.5.2"
 
     implementation "com.github.PelionIoT:java-coap:5.0.0"
+    implementation 'org.slf4j:slf4j-android:1.7.25'
 }

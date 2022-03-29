@@ -34,10 +34,6 @@ class SharedViewModel : ViewModel() {
     private val _participantsLiveData = MutableLiveData<MutableList<Participant>>()
     val participantsLiveData: LiveData<MutableList<Participant>> = _participantsLiveData
 
-    private val _sensorsLiveData = MutableLiveData<String>()
-    val sensorsLiveData: MutableLiveData<String> = _sensorsLiveData
-    private var server: CoapServer? = null
-
     private var apiKey = ""
 
     private var job: Job? = null
@@ -181,39 +177,6 @@ class SharedViewModel : ViewModel() {
 
     override fun onCleared() {
         super.onCleared()
-        server?.stop()
         job?.cancel()
     }
-
-    fun startCoAPServer() {
-        if(server == null){
-            // create a CoAP server and listen to incoming data
-            // TODO: add some more handlers
-            server = CoapServer.builder().transport(5683).build()
-            val timeHandler: CoapHandler = TimeCoapResource()
-            server?.addRequestHandler("/time", timeHandler)
-            server?.start()
-        }
     }
-
-    inner class TimeCoapResource : CoapResource() {
-        // here we should do something with sensors data
-        private var body = "Hello World"
-
-        @Throws(CoapCodeException::class)
-        override fun get(ex: CoapExchange) {
-            ex.setResponseBody(body)
-            ex.setResponseCode(Code.C205_CONTENT)
-            ex.sendResponse()
-        }
-
-        @Throws(CoapCodeException::class)
-        override fun put(ex: CoapExchange) {
-            _sensorsLiveData.postValue(ex.requestBodyString)
-
-            body = ex.requestBodyString
-            ex.setResponseCode(Code.C204_CHANGED)
-            ex.sendResponse()
-        }
-    }
-}

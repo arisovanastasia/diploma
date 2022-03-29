@@ -4,9 +4,9 @@ import android.app.Activity
 import android.app.AlertDialog
 import android.content.Context
 import android.content.Intent
-import android.net.ConnectivityManager
-import android.net.VpnService
+import android.net.*
 import android.os.Bundle
+import android.util.Log
 import android.view.Gravity
 import android.view.LayoutInflater
 import android.view.View
@@ -29,7 +29,12 @@ import com.example.retrorally.databinding.FragmentJudgeBinding
 import com.example.retrorally.ui.main.adapters.DataAdapter
 import com.example.retrorally.ui.main.adapters.TestAdapter
 import com.example.retrorally.ui.main.viewmodel.SharedViewModel
+import com.example.retrorally.ui.main.viewmodel.SensorsViewModel
 import com.google.android.material.snackbar.Snackbar
+import kotlinx.coroutines.*
+import java.net.DatagramPacket
+import java.net.DatagramSocket
+import java.net.Inet6Address
 import java.text.SimpleDateFormat
 import java.util.*
 import kotlin.collections.ArrayList
@@ -39,6 +44,7 @@ class JudgeFragment : Fragment() {
 
     private var mainBinding: FragmentJudgeBinding? = null
     private val viewModel: SharedViewModel by activityViewModels()
+    private val sensorsViewModel: SensorsViewModel by activityViewModels()
     private lateinit var adapter: DataAdapter
     private lateinit var testAdapter: TestAdapter
     private lateinit var resultList: ArrayList<Participant>
@@ -46,6 +52,8 @@ class JudgeFragment : Fragment() {
     private var myComment = ""
     private var idOfProtocol = 0
     private var origId = 0
+
+    private var udpTestJob: Job? = null
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -55,18 +63,53 @@ class JudgeFragment : Fragment() {
 
         // Start a 6LoWPAN VPN-like service here
         // TODO: should it be run here, or in some more convenient class? where we should create it?
-        val connectivityManager = context?.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
-        val currentNetwork = connectivityManager.activeNetwork
         val intent = VpnService.prepare(context)
         if (intent != null) {
             startActivityForResult(intent, 0)
         } else {
             onActivityResult(0, Activity.RESULT_OK, null)
         }
-        viewModel.startCoAPServer() // does nothing if server already started
-        connectivityManager.bindProcessToNetwork(currentNetwork) // protect the app's external traffic from VPN
-        // A better option could be bypassing all of the traffic into the VPN Service, we will need to analyze TCP and UDP headers
 
+        // run a separate thread for networking
+        udpTestJob = CoroutineScope(Dispatchers.IO).launch{
+            // Add a socket to test passing packets to VPN
+            try {
+                val s = DatagramSocket(1234)
+                s.soTimeout = 20; // a 20 ms timeout to receive something
+
+                var i = 0;
+
+                while (true) {
+                    val byteArray = ("test" + i.toString()).toByteArray()
+                    val addr = Inet6Address.getByName("2001:d8::2")
+                    val p = DatagramPacket(byteArray, byteArray.size, addr, 666)
+
+                    try {
+                        s.send(p)
+                    } catch (e: java.io.IOException) {
+                        // do nothing
+                        Log.i("udp", "Send failed " + e.message)
+                    }
+
+                    try {
+                        s.receive(p)
+                    } catch (e: java.net.SocketTimeoutException) {
+                        // do nothing
+                        Log.i("udp", "Receive timeout expired")
+                    } catch (e: java.io.IOException) {
+                        // do nothing
+                        Log.i("udp", "Receive failed " + e.message)
+                    }
+
+                    Thread.sleep(1000)
+                    i++
+                }
+            } catch (e : java.net.BindException){
+                // do nothing, it means another udpTestJob is still running
+            }
+        }
+
+        sensorsViewModel.startCoAPServer() // does nothing if server already started
         observeData()
 
         return mainBinding?.root
@@ -81,6 +124,11 @@ class JudgeFragment : Fragment() {
             context?.startService(getServiceIntent().setAction(LbrService.ACTION_CONNECT))
         }
         super.onActivityResult(requestCode, resultCode, data)
+    }
+
+    override fun onDestroyView() {
+        udpTestJob?.cancel()
+        super.onDestroyView()
     }
 
     override fun onDestroy() {
@@ -141,10 +189,9 @@ class JudgeFragment : Fragment() {
                 adapter.setData(it)
             }
         }
-        viewModel.sensorsLiveData.observe(this.viewLifecycleOwner) {
-            val timeNow = Calendar.getInstance().time
+        sensorsViewModel.sensorsLiveData.observe(this.viewLifecycleOwner) {
             val sdf = SimpleDateFormat("HH:mm:ss")
-            postTimeToList(sdf.format(timeNow))
+            postTimeToList(sdf.format(it.time2))
         }
     }
 
@@ -269,5 +316,4 @@ class JudgeFragment : Fragment() {
             .create()
             .show()
     }
-
 }
