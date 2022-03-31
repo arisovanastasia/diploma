@@ -1,10 +1,14 @@
 package com.example.retrorally.ui.main.view
 
+import android.Manifest
 import android.app.Activity
 import android.app.AlertDialog
 import android.content.Context
+import android.content.DialogInterface
 import android.content.Intent
+import android.content.pm.PackageManager
 import android.net.*
+import android.os.Build
 import android.os.Bundle
 import android.util.Log
 import android.view.Gravity
@@ -61,6 +65,44 @@ class JudgeFragment : Fragment() {
     ): View? {
         mainBinding = FragmentJudgeBinding.inflate(inflater, container, false)
 
+        // We need this for BLE scan permissions; TODO: think about VpnService.prepare
+        // Setup bluetooth beacon detection and automatic connection
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            if (context?.checkSelfPermission(Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED ||
+                context?.checkSelfPermission(Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED
+            ) {
+                val builder = AlertDialog.Builder(this.context)
+                builder.setTitle("This app needs location access")
+                builder.setMessage("Please grant location access so this app can detect beacons")
+                builder.setPositiveButton(android.R.string.ok, null)
+                builder.setOnDismissListener {
+                    requestPermissions(
+                        arrayOf(
+                            Manifest.permission.ACCESS_FINE_LOCATION,
+                            Manifest.permission.ACCESS_COARSE_LOCATION
+                        ), 1
+                    )
+                }
+                builder.show()
+            }
+        }
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+            if (context?.checkSelfPermission(Manifest.permission.BLUETOOTH_SCAN) != PackageManager.PERMISSION_GRANTED) {
+                val builder = AlertDialog.Builder(this.context)
+                builder.setTitle("This app needs BLE scan access")
+                builder.setMessage("Please grant BLE scan access so this app can detect beacons")
+                builder.setPositiveButton(android.R.string.ok, null)
+                builder.setOnDismissListener {
+                    requestPermissions(
+                        arrayOf(Manifest.permission.BLUETOOTH_SCAN),
+                        1
+                    )
+                }
+                builder.show()
+            }
+        }
+
         // Start a 6LoWPAN VPN-like service here
         // TODO: should it be run here, or in some more convenient class? where we should create it?
         val intent = VpnService.prepare(context)
@@ -75,7 +117,7 @@ class JudgeFragment : Fragment() {
             // Add a socket to test passing packets to VPN
             try {
                 val s = DatagramSocket(1234)
-                s.soTimeout = 20; // a 20 ms timeout to receive something
+                s.soTimeout = 50; // a 20 ms timeout to receive something
 
                 var i = 0;
 
@@ -92,7 +134,11 @@ class JudgeFragment : Fragment() {
                     }
 
                     try {
+                        val buffer = ByteArray(1500); // must  be enough
+                        val p = DatagramPacket(buffer, buffer.size)
                         s.receive(p)
+
+                        Log.i("udp", "received: " + String(p.data.copyOfRange(0, p.length)) + " from " + p.socketAddress.toString())
                     } catch (e: java.net.SocketTimeoutException) {
                         // do nothing
                         Log.i("udp", "Receive timeout expired")
