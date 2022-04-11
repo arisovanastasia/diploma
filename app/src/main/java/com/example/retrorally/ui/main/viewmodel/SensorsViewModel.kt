@@ -27,12 +27,10 @@ class SensorsViewModel : ViewModel() {
 
         if(server == null){
             // create a CoAP server and listen to incoming data
-            // TODO: add some more handlers
             server = CoapServer.builder().transport(5683).build()
             val timeHandler: CoapHandler = TimeCoapResource()
             server?.addRequestHandler("/time/*", timeHandler)
 
-            //TODO: uri */<sensor id>
             val hbHandler: CoapHandler = HBCoapResource()
             server?.addRequestHandler("/hb/*", hbHandler)
 
@@ -121,9 +119,10 @@ class SensorsViewModel : ViewModel() {
             val id = ex.requestUri.split("/").elementAtOrNull(2)
             val body = ex.requestBody
 
+            //нам тут хватает и 3-х байтов (0 - 4278255615), а с полными 4-мя будет переполнение
             if(value != null && id != null) {
-                value.timers[id] = body[0].toInt() shl 24 or (body[1].toInt() and 0xFF) shl 16 or
-                        (body[2].toInt() and 0xFF) shl 8 or (body[3].toInt() and 0xFF)
+                value.timers[id] = body[0].toLong() shl 24 or (body[1].toLong() and 0xFF) shl 16 or
+                        (body[2].toLong() and 0xFF) shl 8 or (body[3].toLong() and 0xFF)
                 _sensorsLiveData.postValue(value!!)
             }
             ex.setResponseCode(Code.C204_CHANGED)
@@ -144,10 +143,13 @@ class SensorsViewModel : ViewModel() {
 
             val value = _sensorsLiveData.value
             val id = ex.requestUri.split("/").elementAtOrNull(2)
+            val body = ex.requestBody
 
-            //не совсем понял, что тут нужно
             if(value != null && id != null) {
-                value.timers[id] = 0
+                value.cones_and_buttons[id] = when (body[0].toInt() and 1) {
+                    0 -> false
+                    else -> true
+                }
                 _sensorsLiveData.postValue(value!!)
             }
 
@@ -173,9 +175,9 @@ class SensorsViewModel : ViewModel() {
 
             if(value != null && id != null) {
                 when {
-                    body[0].toInt() and (1 shl 1) == 1 -> value.stop_line = 1
-                    body[0].toInt() and (1 shl 2) == 1 -> value.stop_line = 2
-                    body[0].toInt() and (1 shl 3) == 1 -> value.stop_line = 3
+                    body[0].toInt() and 1 != 0 -> value.stop_line = 1
+                    body[0].toInt() and 2 != 0 -> value.stop_line = 2
+                    body[0].toInt() and 4 != 0 -> value.stop_line = 3
                 }
                 _sensorsLiveData.postValue(value!!)
             }
@@ -202,8 +204,8 @@ class SensorsViewModel : ViewModel() {
 
             if(value != null && id != null) {
 //                when {
-//                    body[0].toInt() and (1 shl 1) == 1 -> value.inner_s = true
-//                    body[0].toInt() and (1 shl 2) == 1 -> value.outer_s = true
+//                    body[0].toInt() and 1 != 0 -> value.inner_s = true
+//                    body[0].toInt() and 2 != 0 -> value.outer_s = true
 //                }
                 value.square[id] = body[0] //body[0].toInt() shl 24
                 _sensorsLiveData.postValue(value!!)
@@ -216,17 +218,13 @@ class SensorsViewModel : ViewModel() {
     }
 
     class SensorsData {
-        var cones = 0 // количество сбитых конусов
-        var buttons = 0 // количество нажатых кнопок
         var stop_line = 0
-//        var inner_s = false
-//        var outer_s = false
 
         val heartbeats : HashMap<String, Boolean> = HashMap()
         val square : HashMap<String, Byte> = HashMap()
-        val timers : HashMap<String, Int> = HashMap()
+        val timers : HashMap<String, Long> = HashMap()
+        val cones_and_buttons : HashMap<String, Boolean> = HashMap()
 
-//        var time = 0
         var time1 : Date = Date(0) // первый датчик времени (время старта)
         var time2 : Date = Date(0) // второй датчик времени (время финиша)
     }
