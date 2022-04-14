@@ -28,8 +28,8 @@ class SensorsViewModel : ViewModel() {
         if(server == null){
             // create a CoAP server and listen to incoming data
             server = CoapServer.builder().transport(5683).build()
-            val timeHandler: CoapHandler = TimeCoapResource()
-            server?.addRequestHandler("/time/*", timeHandler)
+            val testHandler: CoapHandler = TestCoapResource()
+            server?.addRequestHandler("/test", testHandler)
 
             val hbHandler: CoapHandler = HBCoapResource()
             server?.addRequestHandler("/hb/*", hbHandler)
@@ -50,7 +50,15 @@ class SensorsViewModel : ViewModel() {
         }
     }
 
-    inner class TimeCoapResource : CoapResource() {
+    fun reset() {
+        val value = _sensorsLiveData.value
+        value?.cones_and_buttons?.clear()
+        value?.square?.clear()
+        value?.stop_line = 0
+        _sensorsLiveData.postValue(value!!)
+    }
+
+    inner class TestCoapResource : CoapResource() {
         // here we should do something with sensors data
         private var body = "Hello World"
 
@@ -64,16 +72,9 @@ class SensorsViewModel : ViewModel() {
         @Throws(CoapCodeException::class)
         override fun put(ex: CoapExchange) {
             // here we can use anything from ex, such as:
-            ex.remoteAddress
-            ex.requestBody
-            ex.requestUri
-
-            val value = _sensorsLiveData.value
-
-            if(value != null) {
-                value.time2 = Calendar.getInstance().time
-                _sensorsLiveData.postValue(value!!)
-            }
+            // ex.remoteAddress
+            // ex.requestBody
+            // ex.requestUri
 
             body = ex.requestBodyString
             ex.setResponseCode(Code.C204_CHANGED)
@@ -95,7 +96,7 @@ class SensorsViewModel : ViewModel() {
             val id = ex.requestUri.split("/").elementAtOrNull(2)
 
             if (value != null && id != null) {
-                value.heartbeats[id] = true
+                value.heartbeats[id] = Calendar.getInstance().time
                 _sensorsLiveData.postValue(value!!)
             }
 
@@ -121,8 +122,15 @@ class SensorsViewModel : ViewModel() {
 
             //нам тут хватает и 3-х байтов (0 - 4278255615), а с полными 4-мя будет переполнение
             if(value != null && id != null) {
-                value.timers[id] = body[0].toLong() shl 24 or (body[1].toLong() and 0xFF) shl 16 or
+                val time = body[0].toLong() shl 24 or (body[1].toLong() and 0xFF) shl 16 or
                         (body[2].toLong() and 0xFF) shl 8 or (body[3].toLong() and 0xFF)
+
+                if(id.startsWith("st")) {
+                    value.time1 = time
+                } else if (id.startsWith("fi")) {
+                    value.time2 = time
+                }
+
                 _sensorsLiveData.postValue(value!!)
             }
             ex.setResponseCode(Code.C204_CHANGED)
@@ -203,10 +211,6 @@ class SensorsViewModel : ViewModel() {
             val body = ex.requestBody
 
             if(value != null && id != null) {
-//                when {
-//                    body[0].toInt() and 1 != 0 -> value.inner_s = true
-//                    body[0].toInt() and 2 != 0 -> value.outer_s = true
-//                }
                 value.square[id] = body[0] //body[0].toInt() shl 24
                 _sensorsLiveData.postValue(value!!)
             }
@@ -218,14 +222,13 @@ class SensorsViewModel : ViewModel() {
     }
 
     class SensorsData {
-        var stop_line = 0
-
-        val heartbeats : HashMap<String, Boolean> = HashMap()
+        val heartbeats : HashMap<String, Date> = HashMap()
         val square : HashMap<String, Byte> = HashMap()
-        val timers : HashMap<String, Long> = HashMap()
         val cones_and_buttons : HashMap<String, Boolean> = HashMap()
 
-        var time1 : Date = Date(0) // первый датчик времени (время старта)
-        var time2 : Date = Date(0) // второй датчик времени (время финиша)
+        var stop_line = 0
+
+        var time1 : Long = 0 // первый датчик времени (время старта)
+        var time2 : Long = 0 // второй датчик времени (время финиша)
     }
 }
