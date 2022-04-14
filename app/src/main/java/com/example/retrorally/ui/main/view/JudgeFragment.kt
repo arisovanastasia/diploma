@@ -3,14 +3,12 @@ package com.example.retrorally.ui.main.view
 import android.Manifest
 import android.app.Activity
 import android.app.AlertDialog
-import android.content.Context
-import android.content.DialogInterface
-import android.content.Intent
+import android.content.*
 import android.content.pm.PackageManager
 import android.net.*
 import android.os.Build
 import android.os.Bundle
-import android.util.Log
+import android.os.IBinder
 import android.view.Gravity
 import android.view.LayoutInflater
 import android.view.View
@@ -35,14 +33,14 @@ import com.example.retrorally.ui.main.adapters.TestAdapter
 import com.example.retrorally.ui.main.viewmodel.SharedViewModel
 import com.example.retrorally.ui.main.viewmodel.SensorsViewModel
 import com.google.android.material.snackbar.Snackbar
-import kotlinx.coroutines.*
-import java.net.DatagramPacket
-import java.net.DatagramSocket
-import java.net.Inet6Address
 import java.text.SimpleDateFormat
-import java.util.*
 import kotlin.collections.ArrayList
-
+import android.bluetooth.BluetoothDevice
+import android.content.IntentFilter
+import android.content.Intent
+import android.content.BroadcastReceiver
+import android.bluetooth.BluetoothAdapter
+import kotlinx.coroutines.*
 
 class JudgeFragment : Fragment() {
 
@@ -57,7 +55,62 @@ class JudgeFragment : Fragment() {
     private var idOfProtocol = 0
     private var origId = 0
 
-    private var udpTestJob: Job? = null
+    private lateinit var mLbrBinder: LbrService.LbrBinder
+    private var mLbrBound: Boolean = false
+    private var scanJob: Job? = null
+
+    /** Defines callbacks for service binding, passed to bindService()  */
+    private val connection = object : ServiceConnection {
+        override fun onServiceConnected(className: ComponentName, binder: IBinder) {
+            mLbrBinder = binder as LbrService.LbrBinder
+            mLbrBound = true
+
+            scanJob = CoroutineScope(Dispatchers.IO).launch {
+                val foundList : HashMap<BluetoothDevice, Short> = HashMap()
+                val bluetoothAdapter = BluetoothAdapter.getDefaultAdapter()
+                val receiver = object : BroadcastReceiver() {
+                    override fun onReceive(context: Context?, intent: Intent) {
+                        val action = intent.action
+
+                        //Finding devices
+                        if (BluetoothDevice.ACTION_FOUND == action) {
+                            // Get the BluetoothDevice object from the Intent
+                            val device = intent.getParcelableExtra<BluetoothDevice>(BluetoothDevice.EXTRA_DEVICE)
+                            val rssi = intent.getShortExtra(BluetoothDevice.EXTRA_RSSI, Short.MIN_VALUE)
+                            if (device?.name?.startsWith("MIEM") == true) {
+                                foundList.put(device, rssi)
+                            }
+                        }
+                    }
+                }
+                val filter = IntentFilter(BluetoothDevice.ACTION_FOUND)
+                context?.registerReceiver(
+                    receiver,
+                    filter
+                )
+
+                while(true) {
+                    foundList.clear()
+                    bluetoothAdapter.startDiscovery()
+                    Thread.sleep(1000);
+                    bluetoothAdapter.cancelDiscovery() // we are advised to do so before attempting to connect
+
+                    // find the device with strongest signal
+                    var best = foundList.maxByOrNull { it.value }
+                    if (best != null){
+                        mLbrBinder.connectBluetoothDevice(best.key);
+                    }
+
+                    Thread.sleep(20 * 1000)
+                }
+            }
+        }
+
+        override fun onServiceDisconnected(arg0: ComponentName) {
+            scanJob?.cancel()
+            mLbrBound = false
+        }
+    }
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -65,97 +118,57 @@ class JudgeFragment : Fragment() {
     ): View? {
         mainBinding = FragmentJudgeBinding.inflate(inflater, container, false)
 
-        // We need this for BLE scan permissions; TODO: think about VpnService.prepare
-        // Setup bluetooth beacon detection and automatic connection
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            if (context?.checkSelfPermission(Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED ||
-                context?.checkSelfPermission(Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED
-            ) {
-                val builder = AlertDialog.Builder(this.context)
-                builder.setTitle("This app needs location access")
-                builder.setMessage("Please grant location access so this app can detect beacons")
-                builder.setPositiveButton(android.R.string.ok, null)
-                builder.setOnDismissListener {
-                    requestPermissions(
-                        arrayOf(
-                            Manifest.permission.ACCESS_FINE_LOCATION,
-                            Manifest.permission.ACCESS_COARSE_LOCATION
-                        ), 1
-                    )
-                }
-                builder.show()
-            }
-        }
-
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
-            if (context?.checkSelfPermission(Manifest.permission.BLUETOOTH_SCAN) != PackageManager.PERMISSION_GRANTED) {
-                val builder = AlertDialog.Builder(this.context)
-                builder.setTitle("This app needs BLE scan access")
-                builder.setMessage("Please grant BLE scan access so this app can detect beacons")
-                builder.setPositiveButton(android.R.string.ok, null)
-                builder.setOnDismissListener {
-                    requestPermissions(
-                        arrayOf(Manifest.permission.BLUETOOTH_SCAN),
-                        1
-                    )
-                }
-                builder.show()
-            }
-        }
-
-        // Start a 6LoWPAN VPN-like service here
-        // TODO: should it be run here, or in some more convenient class? where we should create it?
-        val intent = VpnService.prepare(context)
-        if (intent != null) {
-            startActivityForResult(intent, 0)
-        } else {
-            onActivityResult(0, Activity.RESULT_OK, null)
-        }
-
-        // run a separate thread for networking
-        udpTestJob = CoroutineScope(Dispatchers.IO).launch{
-            // Add a socket to test passing packets to VPN
-            try {
-                val s = DatagramSocket(1234)
-                s.soTimeout = 50; // a 20 ms timeout to receive something
-
-                var i = 0;
-
-                while (true) {
-                    val byteArray = ("test" + i.toString()).toByteArray()
-                    val addr = Inet6Address.getByName("2001:d8::2")
-                    val p = DatagramPacket(byteArray, byteArray.size, addr, 666)
-
-                    try {
-                        s.send(p)
-                    } catch (e: java.io.IOException) {
-                        // do nothing
-                        Log.i("udp", "Send failed " + e.message)
+        if(true /* has sensors */) {
+            // We need this for BLE scan permissions;
+            // Setup bluetooth beacon detection and automatic connection
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                if (context?.checkSelfPermission(Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED ||
+                    context?.checkSelfPermission(Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED
+                ) {
+                    val builder = AlertDialog.Builder(this.context)
+                    builder.setTitle("This app needs location access")
+                    builder.setMessage("Please grant location access so this app can detect beacons")
+                    builder.setPositiveButton(android.R.string.ok, null)
+                    builder.setOnDismissListener {
+                        requestPermissions(
+                            arrayOf(
+                                Manifest.permission.ACCESS_FINE_LOCATION,
+                                Manifest.permission.ACCESS_COARSE_LOCATION
+                            ), 1
+                        )
                     }
-
-                    try {
-                        val buffer = ByteArray(1500); // must  be enough
-                        val p = DatagramPacket(buffer, buffer.size)
-                        s.receive(p)
-
-                        Log.i("udp", "received: " + String(p.data.copyOfRange(0, p.length)) + " from " + p.socketAddress.toString())
-                    } catch (e: java.net.SocketTimeoutException) {
-                        // do nothing
-                        Log.i("udp", "Receive timeout expired")
-                    } catch (e: java.io.IOException) {
-                        // do nothing
-                        Log.i("udp", "Receive failed " + e.message)
-                    }
-
-                    Thread.sleep(1000)
-                    i++
+                    builder.show()
                 }
-            } catch (e : java.net.BindException){
-                // do nothing, it means another udpTestJob is still running
             }
+
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+                if (context?.checkSelfPermission(Manifest.permission.BLUETOOTH_SCAN) != PackageManager.PERMISSION_GRANTED) {
+                    val builder = AlertDialog.Builder(this.context)
+                    builder.setTitle("This app needs BLE scan access")
+                    builder.setMessage("Please grant BLE scan access so this app can detect beacons")
+                    builder.setPositiveButton(android.R.string.ok, null)
+                    builder.setOnDismissListener {
+                        requestPermissions(
+                            arrayOf(Manifest.permission.BLUETOOTH_SCAN),
+                            1
+                        )
+                    }
+                    builder.show()
+                }
+            }
+
+            // Start a 6LoWPAN VPN-like service here
+            // TODO: should it be run here, or in some more convenient class? where we should create it?
+            val intent = VpnService.prepare(context)
+            if (intent != null) {
+                startActivityForResult(intent, 0)
+            } else {
+                onActivityResult(0, Activity.RESULT_OK, null)
+            }
+
+            sensorsViewModel.startCoAPServer() // does nothing if server already started
         }
 
-        sensorsViewModel.startCoAPServer() // does nothing if server already started
         observeData()
 
         return mainBinding?.root
@@ -168,12 +181,14 @@ class JudgeFragment : Fragment() {
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         if (resultCode == Activity.RESULT_OK) {
             context?.startService(getServiceIntent().setAction(LbrService.ACTION_CONNECT))
+
+            // Also bind to the service to get control of it
+            context?.bindService(getServiceIntent(), connection, Context.BIND_AUTO_CREATE);
         }
         super.onActivityResult(requestCode, resultCode, data)
     }
 
     override fun onDestroyView() {
-        udpTestJob?.cancel()
         super.onDestroyView()
     }
 
