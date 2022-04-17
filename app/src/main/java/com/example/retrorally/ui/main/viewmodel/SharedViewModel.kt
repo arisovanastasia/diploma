@@ -82,7 +82,7 @@ class SharedViewModel : ViewModel() {
         return Participant(
             participantDTO.responseId,
             participantDTO.responseParticipantNumber,
-            getParticipantResult(participantDTO.responseResult),
+            participantDTO.responseResult,
             participantDTO.responseComment
         )
     }
@@ -91,7 +91,7 @@ class SharedViewModel : ViewModel() {
         origId: Int,
         idOfProtocol: Int,
         num: String,
-        score: String,
+        score: ResultsDTO,
         comment: String,
         targetPosition: Int? = null
     ) {
@@ -102,7 +102,7 @@ class SharedViewModel : ViewModel() {
             idOfProtocol,
             sdf.format(time),
             num,
-            ResultsDTO(score),
+            score,
             comment,
             ""
         )
@@ -137,36 +137,10 @@ class SharedViewModel : ViewModel() {
                 Participant(
                     it.origId,
                     it.participantNumber,
-                    getParticipantResult(it.result),
+                    it.result,
                     it.comment
                 )
-            }
-                .toMutableList()
-    }
-
-    private fun getParticipantResult(resultsDTO: ResultsDTO): String {
-        var result = ""
-        when {
-            resultsDTO.time != null -> {
-                result += "${resultsDTO.time}"
-            }
-            resultsDTO.cone != null -> {
-                result += "${resultsDTO.cone} \n"
-            }
-            resultsDTO.button != null -> {
-                result += "${resultsDTO.button} \n"
-            }
-            resultsDTO.square != null -> {
-                result += "${resultsDTO.square} \n"
-            }
-            resultsDTO.finish_line != null -> {
-                result += "${resultsDTO.cone} \n"
-            }
-            else -> {
-                result += "${resultsDTO.stop_line}"
-            }
-        }
-        return result
+            }.toMutableList()
     }
 
     fun getLocalTime(dateTime: String): String {

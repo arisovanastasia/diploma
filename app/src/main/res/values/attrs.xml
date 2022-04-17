@@ -1,0 +1,11 @@
+<resources>
+    <declare-styleable name="CustomEdits">
+        <attr name="allowPlus" format="boolean" />
+        <attr name="showSeconds" format="boolean" />
+        <attr name="decimal" format="boolean" />
+        <attr name="format" format="string" />
+    </declare-styleable>
+    <declare-styleable name="multi_line_radio_group">
+        <attr name="max_in_row" format="integer" />
+    </declare-styleable>
+</resources>

@@ -16,13 +16,14 @@ class TestAdapter(val context : Context, private var listOfItems: MutableList<St
         parent: ViewGroup,
         viewType: Int
     ): TestItemViewHolder {
-        val view =
-            LayoutInflater.from(parent.context).inflate(R.layout.test_list_item, parent, false)
-        return TestItemViewHolder(view)
+        //val view =
+        //    LayoutInflater.from(parent.context).inflate(R.layout.test_list_item, parent, false)
+        //return TestItemViewHolder(view)
+        return TestItemViewHolder(parent)
     }
 
     override fun onBindViewHolder(holder: TestItemViewHolder, position: Int) {
-        holder.onBindTest(listOfItems[position], setTimeToView)
+        //holder.onBindTest(listOfItems[position], setTimeToView)
     }
 
     override fun getItemCount() = listOfItems.size
@@ -33,12 +34,12 @@ class TestAdapter(val context : Context, private var listOfItems: MutableList<St
     }
 
     class TestItemViewHolder(item: View) : RecyclerView.ViewHolder(item) {
-        var timeButton: Button = item.findViewById(R.id.test_button)
-        fun onBindTest(timeData: String, setTimeToView: (String) -> Unit) {
-            timeButton.text = timeData
-            timeButton.setOnClickListener {
-                setTimeToView(timeButton.text.toString())
-            }
-        }
+        //var timeButton: Button = item.findViewById(R.id.test_button)
+        //fun onBindTest(timeData: String, setTimeToView: (String) -> Unit) {
+        //    timeButton.text = timeData
+        //    timeButton.setOnClickListener {
+        //        setTimeToView(timeButton.text.toString())
+        //    }
+        //}
     }
 }

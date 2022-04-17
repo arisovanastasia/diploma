@@ -13,9 +13,6 @@ import android.view.Gravity
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Button
-import android.widget.FrameLayout
-import android.widget.Toast
 import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
@@ -29,7 +26,6 @@ import com.example.retrorally.data.models.dto.ContestDataDTO
 import com.example.retrorally.databinding.DialogLayoutBinding
 import com.example.retrorally.databinding.FragmentJudgeBinding
 import com.example.retrorally.ui.main.adapters.DataAdapter
-import com.example.retrorally.ui.main.adapters.TestAdapter
 import com.example.retrorally.ui.main.viewmodel.SharedViewModel
 import com.example.retrorally.ui.main.viewmodel.SensorsViewModel
 import com.google.android.material.snackbar.Snackbar
@@ -40,7 +36,15 @@ import android.content.IntentFilter
 import android.content.Intent
 import android.content.BroadcastReceiver
 import android.bluetooth.BluetoothAdapter
+import android.os.Looper
+import android.os.Looper.*
+import android.widget.*
+import androidx.core.view.children
+import com.example.retrorally.data.models.dto.ResultsDTO
+import com.example.retrorally.databinding.LineDataLayoutBinding
 import kotlinx.coroutines.*
+import java.util.*
+import kotlin.collections.HashMap
 
 class JudgeFragment : Fragment() {
 
@@ -48,12 +52,13 @@ class JudgeFragment : Fragment() {
     private val viewModel: SharedViewModel by activityViewModels()
     private val sensorsViewModel: SensorsViewModel by activityViewModels()
     private lateinit var adapter: DataAdapter
-    private lateinit var testAdapter: TestAdapter
     private lateinit var resultList: ArrayList<Participant>
-    private lateinit var testList: MutableList<String>
-    private var myComment = ""
+
     private var idOfProtocol = 0
     private var origId = 0
+
+    private lateinit var inputs: List<String>
+    private lateinit var fastComments: List<String>
 
     private lateinit var mLbrBinder: LbrService.LbrBinder
     private var mLbrBound: Boolean = false
@@ -150,21 +155,6 @@ class JudgeFragment : Fragment() {
 
         super.onViewCreated(view, savedInstanceState)
         resultList = ArrayList()
-        testList = ArrayList()
-        val recycler: RecyclerView = view.findViewById(R.id.results_recycler)
-        val testRecycler: RecyclerView = view.findViewById(R.id.test_recycler)
-        //set adapter
-        adapter = DataAdapter(this.requireContext(), resultList) { participant, position ->
-            onParticipantChanged(participant, position)
-        }
-        testAdapter = TestAdapter(this.requireContext(), testList) {
-            mainBinding?.mainView?.resultText?.setText(it)
-        }
-        //set Recycler view adapter
-        recycler.layoutManager = LinearLayoutManager(requireContext())
-        recycler.adapter = adapter
-        testRecycler.layoutManager = LinearLayoutManager(requireContext())
-        testRecycler.adapter = testAdapter
 
         setupCarNumberInput()
         onClickListeners()
@@ -200,19 +190,254 @@ class JudgeFragment : Fragment() {
             }
         }
         sensorsViewModel.sensorsLiveData.observe(this.viewLifecycleOwner) {
-            val sdf = SimpleDateFormat("HH:mm:ss")
-            postTimeToList(sdf.format(it.time2))
+            // TODO: do something
         }
     }
 
-    private fun postTimeToList(time: String) {
-        testList.add(time)
-        val newList = testList
-        setDataTimeFromSensors(newList)
-    }
+    companion object { // TODO: seems that this must become a fragment
+        fun adjustVisibility(inputs: List<String>, fastComments: List<String>, lineData: LineDataLayoutBinding?, showButtons: Boolean = true) {
+            if (inputs.contains("time_hm")) {
+                lineData?.timeHmInputs?.visibility = View.VISIBLE
+            } else {
+                lineData?.timeHmInputs?.visibility = View.GONE
+            }
 
-    private fun setDataTimeFromSensors(listOfTimes: MutableList<String>) {
-        testAdapter.setTestData(listOfTimes)
+            if (inputs.contains("time_hms")) {
+                lineData?.timeHmsInputs?.visibility = View.VISIBLE
+            } else {
+                lineData?.timeHmsInputs?.visibility = View.GONE
+            }
+
+            if (inputs.contains("set_time")) {
+                lineData?.setTimeInputs?.visibility = View.VISIBLE
+            } else {
+                lineData?.setTimeInputs?.visibility = View.GONE
+            }
+
+            if (inputs.contains("start_time")) {
+                lineData?.startTimeInputs?.visibility = View.VISIBLE
+            } else {
+                lineData?.startTimeInputs?.visibility = View.GONE
+            }
+
+            if (inputs.contains("finish_time")) {
+                lineData?.finishTimeInputs?.visibility = View.VISIBLE
+            } else {
+                lineData?.finishTimeInputs?.visibility = View.GONE
+            }
+
+            if (inputs.contains("cones")) {
+                lineData?.conesInputs?.visibility = View.VISIBLE
+            } else {
+                lineData?.conesInputs?.visibility = View.GONE
+            }
+
+            if (inputs.contains("buttons")) {
+                lineData?.buttonsInputs?.visibility = View.VISIBLE
+            } else {
+                lineData?.buttonsInputs?.visibility = View.GONE
+            }
+
+            if (inputs.contains("stop_line")) {
+                lineData?.stopLineInputs?.visibility = View.VISIBLE
+            } else {
+                lineData?.stopLineInputs?.visibility = View.GONE
+            }
+
+            if (inputs.contains("base")) {
+                lineData?.base?.visibility = View.VISIBLE
+            } else {
+                lineData?.base?.visibility = View.GONE
+            }
+
+            if (inputs.contains("scheme")) {
+                lineData?.scheme?.visibility = View.VISIBLE
+            } else {
+                lineData?.scheme?.visibility = View.GONE
+            }
+
+            for (comment in fastComments) {
+                val commentCheckBox = CheckBox(lineData?.root?.context)
+                commentCheckBox.text = comment
+                commentCheckBox.isChecked = false
+                lineData?.fastComments?.addView(commentCheckBox)
+            }
+
+            if (!showButtons) {
+                lineData?.timeHmsEnter?.visibility = View.INVISIBLE
+                lineData?.startTimeEnter?.visibility = View.INVISIBLE
+                lineData?.finishTimeEnter?.visibility = View.INVISIBLE
+
+                lineData?.fastComments?.visibility = View.GONE
+            }
+        }
+
+        fun getResult(lineData: LineDataLayoutBinding?): ResultsDTO {
+            var time_hm : String? = null
+            if(lineData?.timeHmInputs?.visibility == View.VISIBLE) {
+                time_hm = lineData.timeHm.text.toString()
+            }
+
+            var time_hms : String? = null
+            if(lineData?.timeHmsInputs?.visibility == View.VISIBLE) {
+                time_hms= lineData.timeHms.text.toString()
+            }
+
+            var set_time : String? = null
+            if(lineData?.setTimeInputs?.visibility == View.VISIBLE) {
+                set_time= lineData.setTime.text.toString()
+            }
+
+            var start_time : String? = null
+            if(lineData?.startTimeInputs?.visibility == View.VISIBLE) {
+                start_time= lineData.startTime.text.toString()
+            }
+
+            var finish_time : String? = null
+            if(lineData?.finishTimeInputs?.visibility == View.VISIBLE) {
+                finish_time= lineData.finishTime.text.toString()
+            }
+
+            var cones : Int? = null
+            if(lineData?.conesInputs?.visibility == View.VISIBLE) {
+                cones= lineData.cones.value
+            }
+
+            var buttons : Int? = null
+            if(lineData?.buttonsInputs?.visibility == View.VISIBLE) {
+                buttons = lineData.buttons.value
+            }
+
+            var stop_line : Int? = null
+            if(lineData?.stopLineInputs?.visibility == View.VISIBLE) {
+                stop_line = lineData.stopLine.selectedItemPosition
+            }
+
+            var base : Int? = null
+            if(lineData?.base?.visibility == View.VISIBLE) {
+                if (lineData.base.isChecked ) {
+                    base = 1
+                } else {
+                    base = 0
+                }
+            }
+
+            var scheme : Int? = null
+            if(lineData?.scheme?.visibility == View.VISIBLE) {
+               if (lineData.scheme.isChecked) {
+                   scheme = 1
+               } else {
+                   scheme = 0
+               }
+            }
+
+            return ResultsDTO(
+                time_hm,
+                time_hms,
+                set_time,
+                start_time,
+                finish_time,
+                cones,
+                buttons,
+                null,
+                stop_line,
+                base,
+                scheme
+            );
+        }
+
+        fun getCarNumber(lineData: LineDataLayoutBinding?): String {
+            return lineData?.car?.text.toString()
+        }
+
+        fun getComment(lineData: LineDataLayoutBinding?): String {
+            var r = lineData?.comment?.text.toString()
+
+            for(commentView in lineData?.fastComments?.children!!){
+                val commentCheckBox = commentView as CheckBox
+
+                if (commentCheckBox.isChecked) {
+                    r += " " + commentCheckBox.text
+                }
+            }
+
+            return r;
+        }
+
+        fun clearLineData(lineData: LineDataLayoutBinding?) {
+            lineData?.car?.text?.clear()
+            lineData?.timeHm?.text?.clear()
+            lineData?.timeHms?.text?.clear()
+            lineData?.setTime?.text?.clear()
+            lineData?.startTime?.text?.clear()
+            lineData?.finishTime?.text?.clear()
+
+            lineData?.cones?.text?.clear()
+            lineData?.buttons?.text?.clear()
+
+            lineData?.stopLine?.setSelection(0)
+
+            lineData?.base?.setChecked(false)
+            lineData?.scheme?.setChecked(false)
+
+            lineData?.comment?.text?.clear()
+
+            for(commentView in lineData?.fastComments?.children!!){
+                val commentCheckBox = commentView as CheckBox
+                commentCheckBox.setChecked(false)
+            }
+        }
+
+        fun fillInputs(participant: Participant, lineData: LineDataLayoutBinding?) {
+            lineData?.car?.setText(participant.participant)
+
+            if(participant.result.time_hm != null){
+                lineData?.timeHm?.setText(participant.result.time_hm)
+            }
+
+            if(participant.result.time_hms != null){
+                lineData?.timeHms?.setText(participant.result.time_hms)
+            }
+
+            if(participant.result.set_time != null){
+                lineData?.setTime?.setText(participant.result.set_time)
+            }
+
+            if(participant.result.start_time != null){
+                lineData?.startTime?.setText(participant.result.start_time)
+            }
+
+            if(participant.result.finish_time != null){
+                lineData?.finishTime?.setText(participant.result.finish_time)
+            }
+
+            if(participant.result.cones != null){
+                lineData?.cones?.setValue(participant.result.cones)
+            }
+
+            if(participant.result.buttons != null){
+                lineData?.buttons?.setValue(participant.result.buttons)
+            }
+
+            if(participant.result.stop_line != null){
+                lineData?.stopLine?.setSelection(participant.result.stop_line!!)
+            }
+
+            if(participant.result.base != null){
+                lineData?.base?.setChecked(participant.result.base!! != 0)
+            }
+
+            if(participant.result.scheme != null){
+                lineData?.scheme?.setChecked(participant.result.scheme!! != 0)
+            }
+
+            lineData?.comment?.setText(participant.comment)
+
+            for(commentView in lineData?.fastComments?.children!!){
+                val commentCheckBox = commentView as CheckBox
+                commentCheckBox.setChecked(false)
+            }
+        }
     }
 
     private fun setContestDataToViews(data: ContestDataDTO) {
@@ -223,6 +448,11 @@ class JudgeFragment : Fragment() {
         mainBinding?.descriptionView?.text = data.description
         viewModel.setInitialParticipantLiveData(data.usersProtocol)
         idOfProtocol = data.id
+
+        inputs = data.inputs
+        fastComments = data.fastComments
+
+        adjustVisibility(inputs, fastComments, mainBinding?.lineData);
 
         if(data.hasSensors) {
             // Start a service to work with sensors
@@ -274,18 +504,58 @@ class JudgeFragment : Fragment() {
             }
 
             sensorsViewModel.startCoAPServer() // does nothing if server already started
+
+            // Показать кнопки сброса и вывода таблицы маршрутизации
         }
+
+        val recycler: RecyclerView? = mainBinding?.mainView?.resultsRecycler
+
+        //set adapter
+        adapter = DataAdapter(this.requireContext(), resultList, inputs, fastComments) { participant, position ->
+            onParticipantChanged(participant, position)
+        }
+        //set Recycler view adapter
+        recycler?.layoutManager = LinearLayoutManager(requireContext())
+        recycler?.adapter = adapter
     }
 
     private fun onClickListeners() {
-        mainBinding?.mainView?.addNewItemButton?.setOnClickListener {
-            setParticipantDataIntoViews(it)
+        mainBinding?.addNewItemButton?.setOnClickListener {
+            if (mainBinding?.lineData?.car?.text.toString().isNotEmpty()) {
+                setParticipantDataIntoViews(it)
+            } else {
+                createSnack(it)
+            }
+        }
+        mainBinding?.lineData?.timeHmsEnter?.setOnClickListener {
+            val time = Calendar.getInstance().time
+            val sdf = SimpleDateFormat("HH:mm:ss")
+            mainBinding?.lineData?.timeHms?.setText(sdf.format(time))
+            //setParticipantDataIntoViews(it) // TODO: Кириллу не надо ругаться на приход данных без partcipant ID (или просто пока не отправлять?)
+        }
+        mainBinding?.lineData?.startTimeEnter?.setOnClickListener {
+            val time = Calendar.getInstance().time
+            val sdf = SimpleDateFormat("HH:mm:ss")
+            mainBinding?.lineData?.startTime?.setText(sdf.format(time))
+        }
+        mainBinding?.lineData?.finishTimeEnter?.setOnClickListener {
+            val time = Calendar.getInstance().time
+            val sdf = SimpleDateFormat("HH:mm:ss")
+            mainBinding?.lineData?.finishTime?.setText(sdf.format(time))
         }
         mainBinding?.submitButton?.setOnClickListener {
             findNavController().navigate(R.id.action_judgeFragment_to_finalFragment)
-        }
-        mainBinding?.mainView?.commentButton?.setOnClickListener {
-            writeComment()
+
+            /* val dialogView = TextView(context)
+            dialogView.setText(mLbrBinder?.printRoutingTable())
+            AlertDialog.Builder(context)
+                .setTitle("Таблица маршрутизации")
+                .setView(dialogView)
+                .setPositiveButton("OK") { dialog, id ->
+                    dialog.dismiss()
+                }
+                .create()
+                .show() */
         }
     }
 
@@ -302,10 +572,11 @@ class JudgeFragment : Fragment() {
             nine.setupNumberInputButton(9)
             nul.setupNumberInputButton(0)
             cancel.setOnClickListener {
-                mainBinding?.mainView?.car?.apply {
+                mainBinding?.lineData?.car?.apply {
                     if (text.isNotEmpty()) {
-                        text = text.toString()
-                            .substring(startIndex = 0, endIndex = text.toString().length - 1)
+                        setText( getText().toString()
+                            .substring(startIndex = 0, endIndex = getText().toString().length - 1)
+                        )
                     }
                 }
             }
@@ -314,27 +585,21 @@ class JudgeFragment : Fragment() {
 
     private fun Button.setupNumberInputButton(num: Int) {
         setOnClickListener {
-            mainBinding?.mainView?.car?.apply {
-                text = text.toString() + num
+            mainBinding?.lineData?.car?.apply {
+                setText( getText().toString() + num )
             }
         }
     }
 
     private fun setParticipantDataIntoViews(view: View) {
-        if (mainBinding?.mainView?.car?.text.toString().isNotEmpty()) {
-            viewModel.postParticipant(
-                origId,
-                idOfProtocol,
-                mainBinding?.mainView?.car?.text.toString(),
-                mainBinding?.mainView?.resultText?.text.toString(),
-                myComment
-            )
-            mainBinding?.mainView?.car?.text = ""
-            mainBinding?.mainView?.resultText?.text?.clear()
-            myComment = ""
-        } else {
-            createSnack(view)
-        }
+        viewModel.postParticipant(
+            origId,
+            idOfProtocol,
+            getCarNumber(mainBinding?.lineData),
+            getResult(mainBinding?.lineData),
+            getComment(mainBinding?.lineData)
+        )
+        clearLineData(mainBinding?.lineData)
     }
 
     private fun onParticipantChanged(participant: Participant, targetPosition: Int) {
@@ -360,22 +625,4 @@ class JudgeFragment : Fragment() {
         snack.show()
     }
 
-    private fun writeComment() {
-        val dialogBinding = DialogLayoutBinding.inflate(layoutInflater)
-        val input = dialogBinding.inputMessage
-        val pastComment = myComment
-
-        AlertDialog.Builder(requireContext())
-            .setTitle("Комментарий")
-            .setView(input)
-            .setPositiveButton("OK") { dialog, id ->
-                myComment = pastComment + input.text.toString()
-                dialog.dismiss()
-            }
-            .setNegativeButton("Отмена") { dialog, id ->
-                dialog.cancel()
-            }
-            .create()
-            .show()
-    }
 }

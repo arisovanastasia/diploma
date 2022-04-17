@@ -7,10 +7,6 @@
     android:background="@color/background"
     android:focusableInTouchMode="true">
 
-    <androidx.core.widget.NestedScrollView
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content">
-
         <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -30,9 +26,10 @@
                 android:id="@+id/startTime"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:layout_marginHorizontal="2dp"
+                android:layout_marginHorizontal="3dp"
                 android:background="@drawable/frame_for_text"
                 android:gravity="center"
+                android:padding="5dp"
                 android:textColor="@color/black"
                 android:textSize="20sp"
                 android:textStyle="bold"
@@ -52,6 +49,7 @@
                 android:background="@drawable/frame_for_text"
                 android:format24Hour="HH:mm:ss"
                 android:gravity="center"
+                android:padding="5dp"
                 android:textColor="@color/black"
                 android:textSize="20sp"
                 android:textStyle="bold"
@@ -66,9 +64,10 @@
                 android:id="@+id/endTime"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:layout_marginHorizontal="2dp"
+                android:layout_marginHorizontal="3dp"
                 android:background="@drawable/frame_for_text"
                 android:gravity="center"
+                android:padding="5dp"
                 android:textColor="@color/black"
                 android:textSize="20sp"
                 android:textStyle="bold"
@@ -83,8 +82,10 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:fontFamily="casual"
+                android:gravity="center"
+                android:padding="5dp"
                 android:textColor="@color/blue_gray_800"
-                android:textSize="20sp"
+                android:textSize="25sp"
                 app:layout_constraintBottom_toTopOf="@id/enter_number_of_car"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
@@ -95,10 +96,10 @@
                 android:id="@+id/enter_number_of_car"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="10dp"
+                android:layout_marginVertical="20dp"
                 android:text="@string/enter_car_num"
                 android:textColor="@color/blue_gray_400"
-                android:textSize="12sp"
+                android:textSize="17sp"
                 app:layout_constraintBottom_toTopOf="@id/keyboard"
                 app:layout_constraintEnd_toEndOf="@id/keyboard"
                 app:layout_constraintStart_toStartOf="@id/keyboard"
@@ -109,24 +110,56 @@
                 layout="@layout/keyboard_layout"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="15dp"
-                app:layout_constraintBottom_toTopOf="@+id/main_view"
+                android:layout_marginStart="20dp"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/enter_number_of_car" />
+                app:layout_constraintTop_toBottomOf="@+id/enter_number_of_car" />
 
             <TextView
                 android:id="@+id/description_view"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:layout_margin="30dp"
+                android:layout_margin="50dp"
                 android:background="@drawable/frame_for_text"
                 android:maxLines="10"
                 android:padding="5dp"
+                android:textSize="17sp"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toEndOf="@+id/keyboard"
                 app:layout_constraintTop_toBottomOf="@+id/sector"
                 tools:text="Вы находитесь на участке с датчиками. Проверьте, что все работает" />
 
+            <include
+                android:id="@+id/line_data"
+                layout="@layout/line_data_layout"
+                android:layout_height="wrap_content"
+                android:layout_width="400dp"
+                android:background="@drawable/frame_for_text"
+                android:paddingEnd="50dp"
+                android:paddingStart="10dp"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toEndOf="@+id/keyboard"
+                app:layout_constraintTop_toBottomOf="@+id/description_view" />
+
+            <Button
+                android:id="@+id/add_new_item_button"
+                style="@style/greenButton"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="20dp"
+                android:padding="15dp"
+                android:text="Добавить"
+                android:textSize="15sp"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/line_data" />
+
+            <androidx.constraintlayout.widget.Barrier
+                android:id="@+id/barrier"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                app:barrierDirection="bottom"
+                app:constraint_referenced_ids="add_new_item_button,keyboard"
+                tools:layout_editor_absoluteY="16dp"/>
 
             <include
                 android:id="@+id/main_view"
@@ -139,7 +172,7 @@
                 app:layout_constraintBottom_toTopOf="@+id/submit_button"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/keyboard" />
+                app:layout_constraintTop_toBottomOf="@+id/barrier" />
 
             <Button
                 android:id="@+id/submit_button"
@@ -147,12 +180,27 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="20dp"
+                android:padding="15dp"
                 android:text="@string/send_final_button"
+                android:textSize="20sp"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/main_view" />
 
+            <ProgressBar
+                android:id="@+id/progress_bar"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:layout_marginBottom="300dp"
+                android:indeterminateTint="@color/progress_bar"
+                android:visibility="invisible"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
         </androidx.constraintlayout.widget.ConstraintLayout>
-    </androidx.core.widget.NestedScrollView>
+
 </FrameLayout>

@@ -1,0 +1,278 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+
+        <TextView
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:singleLine="true"
+            android:text="Номер участника">
+        </TextView>
+
+        <EditText
+            android:id="@+id/car"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:hint="№"/>
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/time_hm_inputs"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:visibility="gone">
+
+        <TextView
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:singleLine="true"
+            android:text="Время прибытия">
+        </TextView>
+
+        <com.example.retrorally.ui.main.widgets.EditTime
+            android:id="@+id/time_hm"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:hint="чч:мм"
+            app:showSeconds="false"/>
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/time_hms_inputs"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:visibility="gone">
+
+        <TextView
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="2"
+            android:singleLine="true"
+            android:text="Время"/>
+
+        <com.example.retrorally.ui.main.widgets.EditTime
+            android:id="@+id/time_hms"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:hint="чч:мм:сс"
+            app:showSeconds="true"/>
+
+        <Button
+            android:id="@+id/time_hms_enter"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text = "!"/>
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/set_time_inputs"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:visibility="gone">
+
+        <TextView
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:singleLine="true"
+            android:text="Назначенное время">
+        </TextView>
+
+        <com.example.retrorally.ui.main.widgets.EditTime
+            android:id="@+id/set_time"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:hint="чч:мм"
+            app:showSeconds="false"/>
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/start_time_inputs"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:visibility="gone">
+
+        <TextView
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="2"
+            android:singleLine="true"
+            android:text="Время старта"/>
+
+        <com.example.retrorally.ui.main.widgets.EditTime
+            android:id="@+id/start_time"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:hint="чч:мм:сс"
+            app:showSeconds="true"/>
+
+        <Button
+            android:id="@+id/start_time_enter"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text = "!"/>
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/finish_time_inputs"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:visibility="gone">
+
+        <TextView
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="2"
+            android:singleLine="true"
+            android:text="Время финиша"/>
+
+        <com.example.retrorally.ui.main.widgets.EditTime
+            android:id="@+id/finish_time"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:hint="чч:мм:сс"
+            app:showSeconds="true"/>
+
+        <Button
+            android:id="@+id/finish_time_enter"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text = "!"/>
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/cones_inputs"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:visibility="gone">
+
+        <TextView
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:singleLine="true"
+            android:text="Конусы">
+        </TextView>
+
+        <com.example.retrorally.ui.main.widgets.EditInteger
+            android:id="@+id/cones"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:hint="Конусы"/>
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/buttons_inputs"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:visibility="gone">
+
+        <TextView
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:singleLine="true"
+            android:text="Стаканы">
+        </TextView>
+
+        <com.example.retrorally.ui.main.widgets.EditInteger
+            android:id="@+id/buttons"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:hint="Стаканы"/>
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/stop_line_inputs"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:visibility="gone">
+
+        <TextView
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:singleLine="true"
+            android:text="Стоп-линия">
+        </TextView>
+
+        <Spinner
+            android:id="@+id/stop_line"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:entries="@array/stop_line"/>
+    </LinearLayout>
+
+    <CheckBox
+        android:id="@+id/base"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="База"
+        android:visibility="gone"/>
+
+    <CheckBox
+        android:id="@+id/scheme"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Схема"
+        android:visibility="gone"/>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+
+        <TextView
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:singleLine="true"
+            android:text="Комментарий">
+        </TextView>
+
+        <EditText
+            android:id="@+id/comment"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:singleLine="true"
+            android:hint="Введите комментарий"/>
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/fast_comments"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+    </LinearLayout>
+
+</LinearLayout>

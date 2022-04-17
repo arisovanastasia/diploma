@@ -50,4 +50,11 @@
     <string name="image_button">Сделать фото</string>
     <string name="send_photo_button">Отправить фото</string>
 
+    <string-array name="stop_line">
+        <item>Недоезд > 50</item>
+        <item>Недоезд</item>
+        <item>ОК</item>
+        <item>Переезд</item>
+    </string-array>
+
 </resources>
