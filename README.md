@@ -1,3 +1,3 @@
 # Diploma_project
 
-Graduation project at University. Developed an android app for sport competitions.
+Graduation project at University. An android app for sport competitions is developed.
